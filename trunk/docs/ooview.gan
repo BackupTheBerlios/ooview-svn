@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Untitled Gantt Project" company="" webLink="http://" view-date="2005-11-07" view-index="0" gantt-divider-location="549" resource-divider-location="300" version="2.0-pre1">
+<view zooming-state="default:7"/>
+<!-- -->
+<calendars>
+<day-types>
+<day-type id="0"/>
+<day-type id="1"/>
+<calendar id="1" name="default">
+<default-week sun="0" mon="0" tue="0" wed="0" thu="0" fri="0" sat="0"/>
+<overriden-day-types/>
+<days/>
+</calendar>
+</day-types>
+</calendars>    <description>    </description>
+
+    <tasks color="#8cb6ce">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon" />
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon" />
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon" />
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text" />
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date" />
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date" />
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int" />
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int" />
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text" />
+            <taskproperty id="tpd9" name="predecessors" type="default" valuetype="text" />
+        </taskproperties>
+        <task id="0" name="ooview" meeting="false" start="2005-11-09" duration="179" complete="0" fixed-start="true" priority="1" expand="true">
+            <task id="1" name="Erforschung des odt-Format" meeting="false" start="2005-11-09" duration="23" complete="0" fixed-start="true" priority="1" expand="true">
+                <notes>
+                    In dieser Phase des Projekts wird das odt-Format auf ihre Funktionalität untersucht
+                </notes>
+                <depend id="2" type="2" difference="0"/>
+            </task>
+            <task id="2" name="Entpacken eines odt-Dokument" meeting="false" start="2005-12-02" duration="31" complete="0" fixed-start="false" priority="1" expand="true">
+                <depend id="3" type="2" difference="0"/>
+            </task>
+            <task id="3" name="Analyse des odt-Format" meeting="false" start="2006-01-02" duration="31" complete="0" fixed-start="false" priority="1" expand="true">
+                <notes>
+                    Der Aufbau eines entpackten odt-Dokument wird analysiert.
+                </notes>
+                <depend id="4" type="2" difference="0"/>
+            </task>
+            <task id="4" name="Unformatierte Ausgabe" meeting="true" start="2006-02-02" duration="1" complete="0" fixed-start="false" priority="1" expand="true">
+                <depend id="5" type="2" difference="0"/>
+            </task>
+            <task id="5" name="Entwicklung des eigenen ovd-Format" meeting="false" start="2006-02-03" duration="14" complete="0" fixed-start="false" priority="1" expand="true">
+                <notes>
+                    Dieses ovd-Format enthält HTML-ähnliche Tags mit denen später im ooview-Hauptprogramm diverse Formatierungen dargestellt werden können.
+                </notes>
+                <depend id="6" type="2" difference="0"/>
+                <depend id="7" type="3" difference="0"/>
+            </task>
+            <task id="6" name="Fertigstellung des ovd-Format" meeting="true" start="2006-02-17" duration="1" complete="0" fixed-start="false" priority="1" expand="true"/>
+            <task id="7" name="Entwicklung des ooview-Hauptprogramms" meeting="false" start="2005-11-09" duration="100" complete="0" fixed-start="true" priority="1" expand="true">
+                <depend id="8" type="2" difference="0"/>
+            </task>
+            <task id="8" name="Fertigstellung des ooview-Hauptprogramms" meeting="true" start="2006-02-17" duration="1" complete="0" fixed-start="false" priority="1" expand="true">
+                <depend id="9" type="2" difference="0"/>
+            </task>
+            <task id="9" name="Arbeiten an erweiterter Ausgabe" meeting="false" start="2006-02-18" duration="20" complete="0" fixed-start="false" priority="1" expand="true">
+                <depend id="10" type="2" difference="0"/>
+            </task>
+            <task id="10" name="Formatierte Ausgaben, Hyperlinks, Graphiken" meeting="true" start="2006-03-10" duration="1" complete="0" fixed-start="false" priority="1" expand="true">
+                <depend id="11" type="2" difference="0"/>
+                <depend id="13" type="2" difference="0"/>
+            </task>
+            <task id="11" name="Entwicklung der Exportfunktion" meeting="false" start="2006-03-11" duration="23" complete="0" fixed-start="false" priority="1" expand="true">
+                <notes>
+                    Mit dieser Funtion können ovd-Dokumente in unformatierte Textdateien exportiert werden
+                </notes>
+                <depend id="12" type="2" difference="0"/>
+            </task>
+            <task id="12" name="Exportfunktion" meeting="true" start="2006-04-03" duration="1" complete="0" fixed-start="false" priority="1" expand="true"/>
+            <task id="13" name="Entwicklung an der Speicherungsfunktion des ovd-Format" meeting="false" start="2006-03-11" duration="23" complete="0" fixed-start="false" priority="1" expand="true">
+                <depend id="14" type="2" difference="0"/>
+            </task>
+            <task id="14" name="Speicherungsfunktion des ovd-Format" meeting="true" start="2006-04-03" duration="1" complete="0" fixed-start="false" priority="1" expand="true">
+                <depend id="15" type="2" difference="0"/>
+            </task>
+            <task id="15" name="Testphase" meeting="false" start="2006-04-04" duration="32" complete="0" fixed-start="false" priority="1" expand="true">
+                <depend id="16" type="2" difference="0"/>
+            </task>
+            <task id="16" name="Fertigstellung des Projekts" meeting="true" start="2006-05-06" duration="1" complete="0" fixed-start="true" priority="1" expand="true"/>
+        </task>
+    </tasks>
+
+    <resources>
+        <resource id="0" name="Eric Aichinger" function="Default:1" contacts="" phone="" />
+        <resource id="1" name="Viktor Delev" function="Default:0" contacts="" phone="" />
+        <resource id="2" name="Harald Atteneder" function="Default:0" contacts="" phone="" />
+        <resource id="3" name="Benjamin Rott" function="Default:0" contacts="" phone="" />
+    </resources>
+
+    <allocations>
+        <allocation task-id="7" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+    </allocations>
+
+    <vacations>
+    </vacations>
+
+    <taskdisplaycolumns>
+        <displaycolumn property-id="tpd6" order="4" width="61" />
+        <displaycolumn property-id="tpd5" order="3" width="63" />
+        <displaycolumn property-id="tpd4" order="2" width="68" />
+        <displaycolumn property-id="tpd3" order="1" width="246" />
+        <displaycolumn property-id="tpd0" order="0" width="19" />
+    </taskdisplaycolumns>
+
+    <previous>
+    </previous>
+
+
+<roles roleset-name="Default"/>
+</project>
