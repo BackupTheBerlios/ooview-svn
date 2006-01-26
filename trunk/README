@@ -1,3 +1,3 @@
-ooview is a ncurses-based program which allows you, to read odt-files within a terminal. There are other usefull features, just like saving these file as txt or ovd (OpenViewDocument), which keeps formattings, searching, or just printing with cups.
+ooview is a ncurses-based program which allows you to read OpenOffice2 odt-files within a terminal. There are other useful features, just like saving these file as txt or ovd (OpenViewDocument), which keeps formattings, searching, or just printing with cups.
 
 See AUTHORS for contact information.
