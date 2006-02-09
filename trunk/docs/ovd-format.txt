@@ -1,0 +1,60 @@
+O V D  F O R M A T   A U F B A U
+Inhalt:
+	content.odd
+	meta.inf
+	optionale Grafiken
+
+C O N T E N T . O D D
+Textfile
+Steuerzeichen:
+<tg>
+Öffnet Tag
+</tg>
+schließt Tag
+
+\< ... <
+\> ... >
+
+content.ovd enthält den gesamten sichtbaren Inhalt der Datei; hier wird bestimmt, was auf den Schirm kommt
+Tags:
+
+<fgcolor=red>This is a red Text now</fgcolor>This text is document default color
+<bgcolor=black>Background is black</bgcolor>
+
+<url=http://someurl.com>Text<url> #Hyperlink mit alternativem Text
+<url>http://someurl.com</url> #Hyperlink mit Url als Text
+<bold></bold> #Fett
+<ul></ul> #unterstrichen
+<gfx=path> #Grafik
+<pb> #Pagebreak, Seitenumbruch
+
+<table=rows:cols>
+</table>
+
+Idee: Tabelle wird in optimaler größe auf den bildschirm geschrieben, 
+dann der text eingefügt und wenn erforderlich abgeschnitten.
+er kann angezeigt werden, indem man den cursor dorthin positioniert.
+im programm selbst werden die positionen der zellen gespeichert. fifo?
+
+Aufzählungspunkte:
+als Text, Tags, "unsichtbarer" tabelle?
+
+M E T A . I N F
+enthält Informationen über das Dokument
+Binärdatei?
+
+##########
+name
+date #erstellung
+date #last update
+time #editing
+desc
+topic
+keywords
+comments
+amountsizes
+amountlines
+amountchars
+amounttables
+amountgfx
+size

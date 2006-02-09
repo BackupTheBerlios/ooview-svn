@@ -1,0 +1,88 @@
+G R U N D L E G E N D E S
+
+CONVERT
+konvertiert datei (.odt) in temporäre .ovd datei um
+int convert(char** path, char** destpath);
+  path: Pfad der .odt Datei
+  destpath: Pfad der .ovd Datei
+return:
+0 on success
+1 on .odt not found
+2 on could not read .odt (due permissions)
+3 on could not read .odt (due file corruption)
+4 on could not create .ovd (either no space left or bad permissions)
+5 on unknown error
+
+CONVERT_TO_TEXT
+kann erst nach CONVERT aufgerufen werden, konvertiert die .ovd in eine .txt Datei
+(alle Tags entfernen)
+int convert2txt(char** path, char** destpath);
+  path: Pfad der .ovd Datei
+  destpath: Pfad der .txt Datei
+return:
+0 on success
+1 on .ovd not found
+2 on could not read .ovd (due permissions)
+3 on could not read .ovd (due file corruption)
+4 on could not create .txt (either no space left or bad permissions)
+5 on unknown error
+
+Unsicherheit bezüglich folgender funktion (die wichtigste :D ): 
+kann die funktion ohne einschränkungen mit ncurses interagieren?
+schließlich muss scrollen, hyplerlinks/grafiken folgen möglich sein
+datei vollständig einlesen oder soweit wie "das auge reicht"? :)
+
+READ / wird nach convert oder bei open aufgerufen
+ließt datei .ovd und gibt sie auf dem bildschirm aus
+
+SAVE / EXPORT
+kopiert die temporäre .ovd datei in eine reguläre datei -> Pfadeingabe durch User
+in export wird erkannt, ob temp_path eine .ovd oder .txt datei ist > destpath
+int export(char **temp_path, char** destpath);
+return siehe convert
+
+E R W E I T E R T E S
+
+LOAD_CFG
+lädt erst globale- und dann user-config datei
+void load_cfg();
+speicherung in globale variable?
+
+PRINT
+System Call "lp"
+int print(char **path);
+inwiefern kann eine .ovd datei gedruckt werden?
+ggfs. wird in print, wenn nötig, convert2txt aufgerufen
+
+GRAPHICS
+"frame" in ncurses mit System Call "fbi/fbida/fbv/aview"?
+int view_gfx(char** image, char** alt_text);
+
+LOAD_LANG
+globale sprach-variable werden belegt
+int load_lang(char** path);
+  path: Pfad der Sprachdatei
+
+LOAD_KEYB
+keybindings festlegen.
+sollten in einer config-datei von ooview gespeichert sein
+wie the fuck werdn keybindings festgelegt? inside ncurses?
+
+LOG
+loggt fehler mit, wobei:
+int log(char** path, int err);
+  path der pfad der logdatei (default: /var/log/ooview.error.log bzw. ~/ooview.error.log)
+  err dem fehlercode
+entspricht.
+das format, in dem geloggt wird, ist:
+"YYYYMMDDHHMMSS-ERR-DESC"
+wobei datum, uhrzeit in log in erfahrung gebracht werden,
+und desc (möglicherweise in einem globalen array) jeweils einem err zugeordnet ist
+
+
+O P T I O N E N
+globale variable?
+printing_cmd #printing command / System Call
+def_lang #default language to load on startup
+gfx_cmd #command for viewing graphics
+ - Keybindings? oder besser andere datei?
