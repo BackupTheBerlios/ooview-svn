@@ -46,7 +46,7 @@ E R W E I T E R T E S
 LOAD_CFG
 lädt erst globale- und dann user-config datei
 void load_cfg();
-speicherung in globale variable?
+speicherung in umgebungsvariable
 
 PRINT
 System Call "lp"
@@ -81,7 +81,7 @@ und desc (möglicherweise in einem globalen array) jeweils einem err zugeordnet 
 
 
 O P T I O N E N
-globale variable?
+umgebungsvariable
 printing_cmd #printing command / System Call
 def_lang #default language to load on startup
 gfx_cmd #command for viewing graphics
