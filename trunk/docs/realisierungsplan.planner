@@ -31,58 +31,132 @@
         <predecessor id="1" predecessor-id="2" type="FS"/>
       </predecessors>
     </task>
-    <task id="4" name="Entwicklung des eigenen ovd-Formats" note="" work="1094400" start="20060113T170000Z" end="20060308T170000Z" work-start="20060116T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+    <task id="4" name="Entwicklung des eigenen ovd-Formats" note="" work="603000" start="20060113T170000Z" end="20060213T163000Z" work-start="20060116T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <predecessors>
         <predecessor id="1" predecessor-id="3" type="FS"/>
       </predecessors>
     </task>
-    <task id="5" name="Fertigstellung des ovd-Formats" note="" work="0" start="20060308T170000Z" end="20060308T170000Z" work-start="20060308T170000Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
+    <task id="5" name="Fertigstellung des ovd-Formats" note="" work="0" start="20060213T163000Z" end="20060213T163000Z" work-start="20060213T163000Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
       <predecessors>
         <predecessor id="1" predecessor-id="4" type="FS"/>
       </predecessors>
     </task>
-    <task id="6" name="Entwicklung des ooview-Hauptprogramms" note="" work="1353600" start="20060104T000000Z" end="20060309T170000Z" work-start="20060104T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-      <constraint type="must-start-on" time="20060104T000000Z"/>
+    <task id="6" name="Entwicklung des ooview-Hauptprogramms" note="" work="1035000" start="20051224T000000Z" end="20060213T163000Z" work-start="20051226T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <constraint type="must-start-on" time="20051224T000000Z"/>
     </task>
-    <task id="7" name="Fertigstellung des ooview-Hauptprogramms" note="" work="0" start="20060309T170000Z" end="20060309T170000Z" work-start="20060309T170000Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
+    <task id="7" name="Fertigstellung des ooview-Hauptprogramms" note="" work="0" start="20060213T163000Z" end="20060213T163000Z" work-start="20060213T163000Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
       <predecessors>
         <predecessor id="1" predecessor-id="6" type="FS"/>
       </predecessors>
     </task>
-    <task id="8" name="Arbeiten an erweiterter Ausgabe" note="" work="604800" start="20060309T170000Z" end="20060407T170000Z" work-start="20060310T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+    <task id="8" name="Arbeiten an erweiterter Ausgabe" note="" work="837000" start="20060213T163000Z" end="20060324T170000Z" work-start="20060213T163000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <predecessors>
         <predecessor id="1" predecessor-id="6" type="FS"/>
         <predecessor id="1" predecessor-id="4" type="FS"/>
       </predecessors>
+      <task id="9" name="Implementierung von normalen Hyperlinks" note="" work="259200" start="20060213T163000Z" end="20060224T163000Z" work-start="20060213T163000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+      <task id="10" name="Implementierung der Graphikanzeige (view_gfx())" note="" work="577800" start="20060224T163000Z" end="20060324T170000Z" work-start="20060224T163000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+        <predecessors>
+          <predecessor id="1" predecessor-id="9" type="FS"/>
+        </predecessors>
+        <task id="11" name="Graphiken anzeigen" note="" work="316800" start="20060224T163000Z" end="20060313T163000Z" work-start="20060224T163000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+        <task id="12" name="Graphikhyperlinks" note="" work="261000" start="20060313T163000Z" end="20060324T170000Z" work-start="20060313T163000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+          <predecessors>
+            <predecessor id="1" predecessor-id="11" type="FS"/>
+          </predecessors>
+        </task>
+      </task>
     </task>
-    <task id="9" name="Formatierte Ausgabe, Hyperlinks, Graphiken" note="" work="0" start="20060407T170000Z" end="20060407T170000Z" work-start="20060407T170000Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
+    <task id="13" name="Formatierte Ausgabe, Hyperlinks, Graphiken" note="" work="0" start="20060324T170000Z" end="20060324T170000Z" work-start="20060324T170000Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
       <predecessors>
+        <predecessor id="1" predecessor-id="10" type="FS"/>
         <predecessor id="1" predecessor-id="8" type="FS"/>
       </predecessors>
     </task>
-    <task id="10" name="Entwicklung des Exportfunktion" note="" work="432000" start="20060407T170000Z" end="20060428T170000Z" work-start="20060410T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+    <task id="14" name="Entwicklung des Exportfunktion" note="" work="564300" start="20060324T170000Z" end="20060421T134500Z" work-start="20060327T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <predecessors>
-        <predecessor id="1" predecessor-id="9" type="FS"/>
+        <predecessor id="1" predecessor-id="13" type="FS"/>
+      </predecessors>
+      <task id="15" name="Implementierung der Textexportfunktion (convert_to_txt())" note="" work="311400" start="20060324T170000Z" end="20060410T153000Z" work-start="20060327T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+      <task id="16" name="Textexportfunktion" note="" work="0" start="20060410T153000Z" end="20060410T153000Z" work-start="20060410T153000Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
+        <predecessors>
+          <predecessor id="1" predecessor-id="15" type="FS"/>
+        </predecessors>
+      </task>
+      <task id="17" name="Implementierung der ovd-Exportfunkion (convert_to_ovd())" note="" work="252900" start="20060410T153000Z" end="20060421T134500Z" work-start="20060410T153000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+        <predecessors>
+          <predecessor id="1" predecessor-id="16" type="FS"/>
+        </predecessors>
+      </task>
+      <task id="18" name="ovd-Exportfunktion" note="" work="0" start="20060421T134500Z" end="20060421T134500Z" work-start="20060421T134500Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
+        <predecessors>
+          <predecessor id="1" predecessor-id="17" type="FS"/>
+        </predecessors>
+      </task>
+    </task>
+    <task id="19" name="Exportfunktion" note="" work="0" start="20060421T134500Z" end="20060421T134500Z" work-start="20060421T134500Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
+      <predecessors>
+        <predecessor id="1" predecessor-id="14" type="FS"/>
       </predecessors>
     </task>
-    <task id="11" name="Exportfunktion" note="" work="0" start="20060428T170000Z" end="20060428T170000Z" work-start="20060428T170000Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
+    <task id="20" name="Druckfunktion" note="" work="354600" start="20060421T134500Z" end="20060509T161500Z" work-start="20060421T134500Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <predecessors>
-        <predecessor id="1" predecessor-id="10" type="FS"/>
+        <predecessor id="1" predecessor-id="19" type="FS"/>
+      </predecessors>
+      <task id="21" name="Implementierung der Druckfunktion (print())" note="" work="354600" start="20060421T134500Z" end="20060509T161500Z" work-start="20060421T134500Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+      <task id="22" name="Fertigstellung der Druckfunktion" note="" work="0" start="20060509T161500Z" end="20060509T161500Z" work-start="20060509T161500Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
+        <predecessors>
+          <predecessor id="1" predecessor-id="21" type="FS"/>
+        </predecessors>
+      </task>
+    </task>
+    <task id="23" name="Testphase" note="" work="460800" start="20060509T161500Z" end="20060531T161500Z" work-start="20060509T161500Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <predecessors>
+        <predecessor id="1" predecessor-id="20" type="FS"/>
       </predecessors>
     </task>
-    <task id="12" name="Testphase" note="" work="460800" start="20060428T170000Z" end="20060522T170000Z" work-start="20060501T080000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-      <predecessors>
-        <predecessor id="1" predecessor-id="11" type="FS"/>
-      </predecessors>
-    </task>
-    <task id="13" name="Fertigstellung des Projekts" note="" work="0" start="20060526T000000Z" end="20060526T000000Z" work-start="20060526T080000Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
+    <task id="24" name="Fertigstellung des Projekts" note="" work="0" start="20060531T161500Z" end="20060531T161500Z" work-start="20060531T161500Z" percent-complete="0" priority="0" type="milestone" scheduling="fixed-work">
       <constraint type="start-no-earlier-than" time="20060526T000000Z"/>
       <predecessors>
-        <predecessor id="1" predecessor-id="12" type="FS"/>
+        <predecessor id="1" predecessor-id="23" type="FS"/>
       </predecessors>
     </task>
   </tasks>
-  <resource-groups/>
-  <resources/>
-  <allocations/>
+  <resource-groups>
+    <group id="1" name="" admin-name="" admin-phone="" admin-email=""/>
+  </resource-groups>
+  <resources>
+    <resource id="1" name="Rott Benjamin" short-name="benny" type="1" units="0" email="" note="" std-rate="0"/>
+    <resource id="2" name="Delev Viktor" short-name="delev" type="1" units="0" email="" note="" std-rate="0"/>
+    <resource id="3" name="Atteneder Harald" short-name="aTTi" type="1" units="0" email="" note="" std-rate="0"/>
+    <resource id="4" name="Aichinger Eric" short-name="ric" type="1" units="0" email="" note="" std-rate="0"/>
+  </resources>
+  <allocations>
+    <allocation task-id="23" resource-id="1" units="25"/>
+    <allocation task-id="15" resource-id="1" units="50"/>
+    <allocation task-id="11" resource-id="1" units="33"/>
+    <allocation task-id="9" resource-id="1" units="50"/>
+    <allocation task-id="2" resource-id="1" units="25"/>
+    <allocation task-id="23" resource-id="2" units="25"/>
+    <allocation task-id="21" resource-id="2" units="50"/>
+    <allocation task-id="17" resource-id="2" units="50"/>
+    <allocation task-id="12" resource-id="2" units="50"/>
+    <allocation task-id="11" resource-id="2" units="33"/>
+    <allocation task-id="9" resource-id="2" units="50"/>
+    <allocation task-id="2" resource-id="2" units="25"/>
+    <allocation task-id="23" resource-id="3" units="25"/>
+    <allocation task-id="17" resource-id="3" units="50"/>
+    <allocation task-id="12" resource-id="3" units="50"/>
+    <allocation task-id="6" resource-id="3" units="100"/>
+    <allocation task-id="4" resource-id="3" units="50"/>
+    <allocation task-id="2" resource-id="3" units="25"/>
+    <allocation task-id="1" resource-id="3" units="50"/>
+    <allocation task-id="23" resource-id="4" units="25"/>
+    <allocation task-id="21" resource-id="4" units="50"/>
+    <allocation task-id="15" resource-id="4" units="50"/>
+    <allocation task-id="11" resource-id="4" units="34"/>
+    <allocation task-id="4" resource-id="4" units="50"/>
+    <allocation task-id="2" resource-id="4" units="25"/>
+    <allocation task-id="1" resource-id="4" units="50"/>
+  </allocations>
 </project>
