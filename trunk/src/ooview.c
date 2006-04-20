@@ -1,14 +1,29 @@
 #include <curses.h>
 #include <stdlib.h>
 
-//ASCII-Codes
+/*ASCII-Codes*/
 #define ENTER 10
 #define ESCAPE 27
-//Number of the Menuitems
+/*Number of the Menuitems*/
 #define MENU1 6
 #define MENU2 4
 #define MENU3 3
 #define MENU4 4
+
+int convert_to_ovd(char** path, char** destpath);
+int convert_to_txt(char **path, char **destpath);
+int read_ovd(char** path);
+int export_file(char** path, char** destpath);
+int load_cfg();
+int print(char **path);
+/*int view_gfx(char** path);*/
+int view_gfx(char** path, char** alt_text);
+int load_lang(char** path);
+int load_keyb();
+int olog(int err);
+
+
+
 
 void init_curses () {
 	initscr();
@@ -24,20 +39,24 @@ void init_curses () {
 
 void draw_menubar (WINDOW *menubar) {
 	wbkgd(menubar,COLOR_PAIR(2));
+	
 	waddstr(menubar, "File");
 	wattron(menubar, COLOR_PAIR(3));
-	waddstr(menubar,"<F1>");
+	waddstr(menubar,"<F1>");	
 	wattroff(menubar,COLOR_PAIR(3));
+	
 	wmove(menubar,0,10);
 	waddstr(menubar,"View");
 	wattron(menubar,COLOR_PAIR(3));
 	waddstr(menubar,"<F2>");
 	wattroff(menubar, COLOR_PAIR(3));
+	
 	wmove(menubar,0,20);
 	waddstr(menubar, "Options");
 	wattron(menubar, COLOR_PAIR(3));
 	waddstr(menubar, "<F3>");
 	wattroff(menubar, COLOR_PAIR(3));
+	
 	wmove(menubar,0,33);
 	waddstr(menubar, "Help");
 	wattron(menubar,COLOR_PAIR(3));
@@ -48,7 +67,7 @@ void draw_menubar (WINDOW *menubar) {
 WINDOW **draw_menu (int start_col) {
 	int i;
 	WINDOW **items;
-	if (start_col == 0) {
+	if (start_col == 0) { /*menu FILE*/
 		items = (WINDOW **)malloc(MENU1*sizeof(WINDOW *));
 
 		items[0] = newwin (MENU1+2,22,1,start_col);
@@ -64,7 +83,7 @@ WINDOW **draw_menu (int start_col) {
 		wprintw (items[6],"Exit");
 		wbkgd (items[1],COLOR_PAIR(1));
 		wrefresh(items[0]);
-	} else if (start_col == 10)  {	
+	} else if (start_col == 10)  { /*menu VIEW*/
 		items = (WINDOW **)malloc(MENU2*sizeof(WINDOW *));
 
 		items[0] = newwin (MENU2+2,17,1,start_col);
@@ -78,7 +97,7 @@ WINDOW **draw_menu (int start_col) {
 		wprintw (items[4],"Document info");
 		wbkgd (items[1],COLOR_PAIR(1));
 		wrefresh(items[0]);
-	} else if (start_col == 20)  {	
+	} else if (start_col == 20)	{ /*menu OPTIONS*/
 		items = (WINDOW **)malloc(MENU3*sizeof(WINDOW *));
 
 		items[0] = newwin (MENU3+2,21,1,start_col);
@@ -91,7 +110,7 @@ WINDOW **draw_menu (int start_col) {
 		wprintw (items[3],"Keybindings");
 		wbkgd (items[1],COLOR_PAIR(1));
 		wrefresh(items[0]);
-	} else if (start_col == 33)  {	
+	} else if (start_col == 33)  { /*menu HELP*/
 		items = (WINDOW **)malloc(MENU4*sizeof(WINDOW *));
 
 		items[0] = newwin (MENU4+2,19,1,start_col);
@@ -147,6 +166,7 @@ int scroll_menu (WINDOW **items, int count, int menu_start_col) {
 	}
 }
 
+
 int main (int argc, char **argv) {
 	int key;
 	WINDOW *menubar;
@@ -181,28 +201,28 @@ int main (int argc, char **argv) {
 		if (key == KEY_F(1)) {
 			menu_items = draw_menu(0);
 			selected_item = scroll_menu (menu_items, MENU1, 0);
-			//delete_menu(menu_items,4);
+			/*delete_menu(menu_items,4);*/
 			touchwin(stdscr);
 			refresh();
 		}
 		if (key == KEY_F(2)) {				
 			menu_items = draw_menu(10);
 			selected_item = scroll_menu (menu_items, MENU2, 10);
-			//delete_menu(menu_items,4);
+			/*delete_menu(menu_items,4);*/
 			touchwin(stdscr);
 			refresh();
 		}
 		if (key == KEY_F(3)) {
 			menu_items = draw_menu(20);
 			selected_item = scroll_menu (menu_items, MENU3, 20);
-			//delete_menu(menu_items,4);
+			/*delete_menu(menu_items,4);*/
 			touchwin(stdscr);
 			refresh();	
 		}
 		if (key == KEY_F(4)) {
-			menu_items = draw_menu(33);
-			selected_item = scroll_menu (menu_items, MENU4, 33);
-			//delete_menu(menu_items,4);
+			menu_items = draw_menu(30);
+			selected_item = scroll_menu (menu_items, MENU4, 30);
+			/*delete_menu(menu_items,4);*/
 			touchwin(stdscr);
 			refresh();	
 		}

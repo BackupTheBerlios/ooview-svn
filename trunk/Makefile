@@ -3,7 +3,7 @@ BINDIR = bin
 SRC = ooview.c
 
 GCC = /usr/bin/gcc
-GCCOPTS = -Werror -lncurses
+GCCOPTS = -Werror -lncurses -ansi
 RM = rm -f
 
 
