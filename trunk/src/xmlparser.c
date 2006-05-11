@@ -8,10 +8,11 @@ void parseStory (xmlDocPtr doc, xmlNodePtr cur) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {			/* (keyword) */
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"p"))) {			/* (keyword) */
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			printf("name: %s\n", key);
 			xmlFree(key);
+			return;
 		}
 		cur = cur->next;
 	}
@@ -37,9 +38,9 @@ static void parseDoc(char *docname) {
 		xmlFreeDoc(doc);
 		return;
 	}
-	
-	if (xmlStrcmp(cur->name, (const xmlChar *) "parent")) {				/* ROOT NODE (story) */
-		fprintf(stderr,"document of the wrong type, root node != story");
+	/* printf("%s\n", (char*) cur->name); */
+	if (xmlStrcmp(cur->name, (const xmlChar *) "document-content")) {				/* ROOT NODE (story) */
+		fprintf(stderr,"document of the wrong type, root node != story\n");
 		xmlFreeDoc(doc);
 		return;
 	}
@@ -47,11 +48,19 @@ static void parseDoc(char *docname) {
 	cur = cur->xmlChildrenNode;
 	
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"child"))){			/* CHILD NODE (storyinfo) */
-			parseStory (doc, cur);
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"body"))){			/* CHILD NODE (storyinfo) */
+			cur = cur->xmlChildrenNode;
+			while (cur != NULL) {
+				if ((!xmlStrcmp(cur->name, (const xmlChar *)"text")))
+					parseStory (doc, cur);
+				cur = cur->next;
+			}
+			
+					
+			//parseStory (doc, cur);
 		}
 															 
-		cur = cur->next;
+		if (cur != NULL) cur = cur->next;
 	}
 	
 	xmlFreeDoc(doc);
