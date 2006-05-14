@@ -33,7 +33,7 @@
 #include "dialog.h"
 
 
-// The Menubar
+/* The Menubar */
 struct WMenu *the_menubar = NULL;
 
 static menu_entry FileMenu[] = {
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 	
 	if (argc = 1)
 	{
-		mvaddstr((LINES/2)-1,(COLS/2)-34,"OOView - Prints out OpenOffice.org documents (.odt) on your terminal");
+		mvaddstr((LINES/2)-1,(COLS/2)-28,"OOView - Prints out OpenDocuments (.odt) on your terminal");
 		mvaddstr((LINES/2),(COLS/2)-7,"The VERY BETA");
 		mvaddstr((LINES/2)+2,(COLS/2)-10,"Press <ESC> to quit");
 	}

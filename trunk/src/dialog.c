@@ -4,5 +4,5 @@
 #include "dialog.h"
 #include "main.h"
 
-// Primitive way to check if the current dialog is our dialog
+/* Primitive way to check if the current dialog is our dialog */
 Dlg_head *currentdlg = 0;

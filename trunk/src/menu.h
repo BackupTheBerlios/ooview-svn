@@ -28,20 +28,20 @@ extern int menubar_visible;
 typedef struct WMenu {
 	Widget widget;
 
-	int active;				// If the menubar is in use
-	int dropped;			// If the menubar is dropped
-	Menu **menu;			// The actual menus
+	int active;				/* If the menubar is in use */
+	int dropped;			/* If the menubar is dropped */
+	Menu **menu;			/* The actual menus */
 	int items;
-	int selected;			// Selected menu on the top bar
-	int subsel;				// Selected entry on the submenu
-	int max_entry_len;		// Cache value for the columns in a box
-	int previous_widget;	// Selected widget ID before activating menu
+	int selected;			/* Selected menu on the top bar */
+	int subsel;				/* Selected entry on the submenu */
+	int max_entry_len;		/* Cache value for the columns in a box */
+	int previous_widget;	/* Selected widget ID before activating menu */
 }WMenu;
 
 Menu *create_menu (const char *name, menu_entry *entries, int count, const char *help_node);
-//void destroy_menu (Menu *menu);
-//WMenu *menubar_new (int y, int x, int cols, Menu *menu[], int items);
-//void menubar_arrange (WMenu *menubar);
+/*void destroy_menu (Menu *menu); */
+/*WMenu *menubar_new (int y, int x, int cols, Menu *menu[], int items); */
+/*void menubar_arrange (WMenu *menubar); */
 
 #endif
 

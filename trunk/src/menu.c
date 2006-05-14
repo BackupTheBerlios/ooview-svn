@@ -5,6 +5,7 @@
 #include "menu.h"
 #include "global.h"
 #include "dialog.h"
+#include "main.h"
 
 
 Menu *create_menu (const char *name, menu_entry *entries, int count, const char *help_node)
@@ -37,7 +38,7 @@ Menu *create_menu (const char *name, menu_entry *entries, int count, const char 
     }
 
     menu->name = strdup (name);
-    //menu_scan_hotkey(menu);
+    /* menu_scan_hotkey(menu); */
     menu->start_x = 0;
     menu->help_node = strdup (help_node);
     return menu;
