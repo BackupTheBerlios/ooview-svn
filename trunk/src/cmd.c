@@ -1,7 +1,7 @@
 #include "global.h"
 #include "tty.h"
 #include "dialog.h"
-//#include "widget.h"
+#include "widget.h"
 #include "layout.h"
 #include "cmd.h"
 

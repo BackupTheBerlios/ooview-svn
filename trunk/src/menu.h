@@ -26,7 +26,7 @@ typedef struct Menu {
 extern int menubar_visible;
 
 typedef struct WMenu {
-	Widget widget;
+	/*Widget widget;*/
 
 	int active;				/* If the menubar is in use */
 	int dropped;			/* If the menubar is dropped */
