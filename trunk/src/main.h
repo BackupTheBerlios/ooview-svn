@@ -20,6 +20,7 @@
  */
 
 struct WMenu;
+extern struct WMenu *the_menubar;
 
 void init_menu (void);
 void done_menu (void);

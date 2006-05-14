@@ -23,12 +23,18 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
+#include "global.h"
 #include "tty.h"
 #include "menu.h"
+#include "main.h"
 #include "cmd.h"
 #include "boxes.h"
 #include "layout.h"
+#include "dialog.h"
 
+
+// The Menubar
+struct WMenu *the_menubar = NULL;
 
 static menu_entry FileMenu[] = {
 	{' ',"&Open               Ctrl-O", 'O', open_box},

@@ -12,9 +12,8 @@ bin/ooview: $(SOURCEFILES)
 	$(GCC) $(GCCNOLINK) src/boxes.c
 	$(GCC) $(GCCNOLINK) src/cmd.c
 	$(GCC) $(GCCNOLINK) src/layout.c
-	$(GCC) $(GCCNOLINK) src/widget.c
 	$(GCC) $(GCCNOLINK) src/dialog.c
-	$(GCC) $(GCCOPTS) -o $@ main.o menu.o boxes.o cmd.o layout.o widget.o dialog.o
+	$(GCC) $(GCCOPTS) -o $@ main.o menu.o boxes.o cmd.o layout.o dialog.o
 	$(RM) *.o
 
 clean:

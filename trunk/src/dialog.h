@@ -34,6 +34,17 @@ typedef enum {
 	DLG_VALIDATE		// Dialog is to be closed
 } dlg_msg_t;
 
+struct Widget {
+	int x, y;
+	int cols, lines;
+	int options;
+	int dlg_id;
+	struct Widget *next;
+	struct Widget *prev;
+	callback_fn callback;		// The callback function
+	struct Dlg_head *parent;
+};
+
 struct Dlg_head;
 typedef cb_ret_t (*dlg_cb_fn)(struct Dlg_head *h, dlg_msg_t msg, int parm);
 
@@ -61,16 +72,5 @@ typedef struct Dlg_head {
 typedef struct Widget Widget;
 
 typedef cb_ret_t (*callback_fn) (Widget *widget, widget_msg_t msg, int parm);
-
-struct Widget {
-	int x, y;
-	int cols, lines;
-	int options;
-	int dlg_id;
-	struct Widget *next;
-	struct Widget *prev;
-	callback_fn callback;		// The callback function
-	struct Dlg_head *parent;
-};
 
 #endif

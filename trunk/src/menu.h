@@ -1,7 +1,6 @@
 #ifndef __MENU_H
 #define __MENU_H
 
-#include "widget.h"
 
 typedef void (*callfn) (void);
 
@@ -25,7 +24,7 @@ typedef struct Menu {
 
 extern int menubar_visible;
 
-/*typedef struct WMenu {
+typedef struct WMenu {
 	Widget widget;
 
 	int active;				// If the menubar is in use
@@ -37,8 +36,8 @@ extern int menubar_visible;
 	int max_entry_len;		// Cache value for the columns in a box
 	int previous_widget;	// Selected widget ID before activating menu
 }WMenu;
-*/
-//Menu *create_menu (const char *name, menu_entry *entries, int count, const char *help_node);
+
+Menu *create_menu (const char *name, menu_entry *entries, int count, const char *help_node);
 //void destroy_menu (Menu *menu);
 //WMenu *menubar_new (int y, int x, int cols, Menu *menu[], int items);
 //void menubar_arrange (WMenu *menubar);
