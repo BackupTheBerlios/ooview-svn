@@ -192,8 +192,7 @@ int main (int argc, char **argv)
 					}			
 					unpost_menu(file_menu);
 					touchwin(stdscr);
-					werase(file_win);
-					wrefresh(file_win);
+					refresh();
 		}
 		if (cur_menu == 2)
 		{
@@ -232,8 +231,7 @@ int main (int argc, char **argv)
 					
 					unpost_menu(view_menu);
 					touchwin(stdscr);
-					werase(view_win);
-					wrefresh(view_win);
+					refresh();
 		}
 		if (cur_menu == 3)
 		{
@@ -272,8 +270,7 @@ int main (int argc, char **argv)
 					
 					unpost_menu(opts_menu);
 					touchwin(stdscr);
-					werase(opts_win);
-					wrefresh(opts_win);
+					refresh();
 		}
 		if (cur_menu == 4)
 		{
@@ -312,8 +309,7 @@ int main (int argc, char **argv)
 					
 					unpost_menu(about_menu);
 					touchwin(stdscr);
-					werase(about_win);
-					wrefresh(about_win);
+					refresh();
 		}
 	}
 	
