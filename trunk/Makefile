@@ -2,7 +2,7 @@ SOURCEFILES = src/$(wildcard *.c) src/$(wildcard *.h)
 BINDIR=bin
 
 GCC = /usr/bin/gcc
-GCCOPTS = -Werror -lmenu -lncurses
+GCCOPTS = -lmenu -lncurses
 GCCNOLINK = -ansi -Werror -c
 RM = rm -f
 

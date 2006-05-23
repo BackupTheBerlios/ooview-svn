@@ -27,7 +27,7 @@ char *opts_choices[] = {
 	"Keybindings",
 };
 
-char *about_choices[] = {
+char *help_choices[] = {
 	"OOView homepage",
 	"Documentation",
 	"Copying",
@@ -40,18 +40,18 @@ int main (int argc, char **argv)
 	ITEM **file_items;
 	ITEM **view_items;
 	ITEM **opts_items;
-	ITEM **about_items;
+	ITEM **help_items;
 	
 	MENU *file_menu;
 	MENU *view_menu;
 	MENU *opts_menu;
-	MENU *about_menu;
+	MENU *help_menu;
 	
 	WINDOW *menu_bar;
 	WINDOW *file_win;
 	WINDOW *view_win;
 	WINDOW *opts_win;
-	WINDOW *about_win;
+	WINDOW *help_win;
 			
 	int n_choices[4];
 	int c;
@@ -98,11 +98,11 @@ int main (int argc, char **argv)
 	n_choices[0] = ARRAY_SIZE(file_choices);
 	n_choices[1] = ARRAY_SIZE(view_choices);
 	n_choices[2] = ARRAY_SIZE(opts_choices);
-	n_choices[3] = ARRAY_SIZE(about_choices);
+	n_choices[3] = ARRAY_SIZE(help_choices);
 	file_items = (ITEM **)calloc(n_choices[0] + 1, sizeof(ITEM *));
 	view_items = (ITEM **)calloc(n_choices[1] + 1, sizeof(ITEM *));
 	opts_items = (ITEM **)calloc(n_choices[2] + 1, sizeof(ITEM *));
-	about_items = (ITEM **)calloc(n_choices[3] + 1, sizeof(ITEM *));
+	help_items = (ITEM **)calloc(n_choices[3] + 1, sizeof(ITEM *));
 
 	for (i=0; i<n_choices[0]; ++i)
 		file_items[i] = new_item(file_choices[i], NULL); 
@@ -114,22 +114,22 @@ int main (int argc, char **argv)
 		opts_items[i] = new_item(opts_choices[i], NULL); 
 	
 	for (i=0; i<n_choices[3]; ++i)
-		about_items[i] = new_item(about_choices[i], NULL); 
+		help_items[i] = new_item(help_choices[i], NULL); 
 	
 	file_items[n_choices[0]] = (ITEM *)NULL;
 	view_items[n_choices[1]] = (ITEM *)NULL;
 	opts_items[n_choices[2]] = (ITEM *)NULL;
-	about_items[n_choices[3]] = (ITEM *)NULL;
+	help_items[n_choices[3]] = (ITEM *)NULL;
 
 	file_menu = new_menu((ITEM **)file_items);
 	view_menu = new_menu((ITEM **)view_items);
 	opts_menu = new_menu((ITEM **)opts_items);
-	about_menu = new_menu((ITEM **)about_items);
+	help_menu = new_menu((ITEM **)help_items);
 
 	set_menu_mark(file_menu, "");
 	set_menu_mark(view_menu, "");
 	set_menu_mark(opts_menu, "");
-	set_menu_mark(about_menu, "");
+	set_menu_mark(help_menu, "");
 	
 	mvprintw((LINES/2)-1, (COLS/2)-28, "OOView - Prints out OpenDocuments (.odt) on your terminal");
 	mvprintw((LINES/2)  , (COLS/2)-7,  "The VERY ALPHA");
@@ -182,13 +182,17 @@ int main (int argc, char **argv)
 						}
 						else if (c == RETURN)
 						{
+								cur_menu = 0;
 								move(LINES-1,0);
 								clrtoeol();
 								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(file_menu)));
 								break;
 						}
-						else 
-							break;
+						else
+						{
+								cur_menu = 0;
+								break;
+						}
 					}			
 					unpost_menu(file_menu);
 					touchwin(stdscr);
@@ -220,13 +224,17 @@ int main (int argc, char **argv)
 						}
 						else if (c == RETURN)
 						{
+								cur_menu = 0;
 								move(LINES-1,0);
 								clrtoeol();
 								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(view_menu)));
 								break;
 						}
-						else 
-							break;
+						else
+						{
+								cur_menu = 0;
+								break;
+						}
 					}
 					
 					unpost_menu(view_menu);
@@ -259,13 +267,17 @@ int main (int argc, char **argv)
 						}
 						else if (c == RETURN)
 						{
+								cur_menu = 0;
 								move(LINES-1,0);
 								clrtoeol();
 								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(opts_menu)));
 								break;
 						}
-						else 
-							break;
+						else
+						{
+								cur_menu = 0;
+								break;
+						}
 					}
 					
 					unpost_menu(opts_menu);
@@ -274,18 +286,18 @@ int main (int argc, char **argv)
 		}
 		if (cur_menu == 4)
 		{
-					about_win = newwin(6,17,1,53);
-					keypad(about_win,TRUE);
-					box(about_win,0,0);
-					set_menu_win(about_menu, about_win);
-					set_menu_sub(about_menu, derwin(about_win,4,15,1,1));
-					post_menu(about_menu);
-					while (c = wgetch(about_win))
+					help_win = newwin(6,17,1,53);
+					keypad(help_win,TRUE);
+					box(help_win,0,0);
+					set_menu_win(help_menu, help_win);
+					set_menu_sub(help_menu, derwin(help_win,4,15,1,1));
+					post_menu(help_menu);
+					while (c = wgetch(help_win))
 					{
 						if (c == KEY_DOWN)
-								menu_driver(about_menu, REQ_DOWN_ITEM);
+								menu_driver(help_menu, REQ_DOWN_ITEM);
 						else if (c == KEY_UP)
-								menu_driver(about_menu, REQ_UP_ITEM);
+								menu_driver(help_menu, REQ_UP_ITEM);
 						else if (c == KEY_RIGHT)
 						{
 								cur_menu = 1;
@@ -298,16 +310,20 @@ int main (int argc, char **argv)
 						}
 						else if (c == RETURN)
 						{
+								cur_menu = 0;
 								move(LINES-1,0);
 								clrtoeol();
-								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(about_menu)));
+								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(help_menu)));
 								break;
 						}
-						else 
-							break;
+						else
+						{
+								cur_menu = 0;
+								break;
+						}
 					}
 					
-					unpost_menu(about_menu);
+					unpost_menu(help_menu);
 					touchwin(stdscr);
 					refresh();
 		}
@@ -324,12 +340,12 @@ int main (int argc, char **argv)
 		free_item(opts_items[i]);
 
 	for (i=0; i<n_choices[3]; ++i)
-		free_item(about_items[i]);
+		free_item(help_items[i]);
 
 	free_menu(file_menu);
 	free_menu(view_menu);
 	free_menu(opts_menu);
-	free_menu(about_menu);
+	free_menu(help_menu);
 
 	endwin();
 	return 0;
