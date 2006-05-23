@@ -7,15 +7,8 @@ GCCNOLINK = -ansi -Werror -c
 RM = rm -f
 
 bin/ooview: $(SOURCEFILES)
-	$(GCC) $(GCCNOLINK) src/dialog.c
-	$(GCC) $(GCCNOLINK) src/widget.c
-	$(GCC) $(GCCNOLINK) src/layout.c
-	$(GCC) $(GCCNOLINK) src/main.c
-	$(GCC) $(GCCNOLINK) src/boxes.c
-	$(GCC) $(GCCNOLINK) src/cmd.c
-	$(GCC) $(GCCNOLINK) src/menu.c	
-	$(GCC) $(GCCOPTS) -o $@ main.o menu.o boxes.o cmd.o layout.o dialog.o widget.o 
-	$(RM) *.o
+	$(GCC) $(GCCOPTS) -o $@ src/main.c 
 
 clean:
+	$(RM) *.o
 	$(RM) $(BINDIR)/*

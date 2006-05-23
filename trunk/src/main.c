@@ -1,108 +1,340 @@
-/*
- * Copyright (C) 2006 ooview
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston,
- * MA 02111-1307, USA.
- */
+#include <curses.h>
+#include <menu.h>
 
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#define EXIT_KEY 0x078  /* <x> */
+#define RETURN 0x00A
 
-#define ESCAPE 0x1B
-#define RETURN 0xA
-
-#include <stdlib.h>
-#include <ncurses.h>
-
-#include "global.h"
-#include "tty.h"
-#include "menu.h"
-#include "main.h"
-#include "cmd.h"
-#include "boxes.h"
-#include "layout.h"
-#include "dialog.h"
-
-
-/* The Menubar */
-struct WMenu *the_menubar = NULL;
-
-static menu_entry FileMenu[] = {
-	{' ',"&Open               Ctrl-O", 'O', open_box},
-	{' ',"&Close              Ctrl-W", 'C', close_cmd},
-	{' ',"&Export/Save as...  Ctrl-S", 'E', export_box},
-	{' ',"&Reload                 F5", 'R', reload_cmd},
-	{' ',"&Print              Ctrl-P", 'P', print_cmd},
-	{' ',"e&Xit               Ctrl-Q", 'X', quit_cmd}
+char *file_choices[] = {
+	"Open",
+	"Close",
+	"Export/Save as...",
+	"Reload",
+	"Print",
+	"Exit"
 };
 
-static menu_entry ViewMenu[] = {
-	{' ',"&Find                    /", 'F', find_box},
-	{' ',"Find &next               n", 'N', find_next_cmd},
-	{' ',"Find &previous           p", 'P', find_prev_cmd},
-	{' ',"&Document info           ?", 'D', doc_info_box}
+char *view_choices[] = {
+	"Find",
+	"Find next",
+	"Find previous",
+	"Document info",
 };
 
-static menu_entry OptMenu[] = {
-	{' ',"&External Programs", 'E', ext_progs_box},
-	{' ',"&Language", 'L', language_box},
-	{' ',"&Keybindings", 'K', keybindings_box}
+char *opts_choices[] = {
+	"External Programs",
+	"Language",
+	"Keybindings",
 };
 
-static menu_entry HelpMenu[] = {
-	{' ',"ooview &Homepage          ", 'H'/*, homepage_box*/},
-	{' ',"&Documentation          F1", 'D'/*, documentation_box*/},
-	{' ',"&Copying                  ", 'C'/*, copying_box*/},
-	{' ',"&About ooview             ", 'A'/*, about_box*/}
+char *about_choices[] = {
+	"OOView homepage",
+	"Documentation",
+	"Copying",
+	"About OOView",
 };
 
-#define menu_entries(x) sizeof(x)/sizeof(menu_entry)
 
-static Menu *MenuBar[4];
-
-void init_menu (void)
+int main (int argc, char **argv)
 {
-    MenuBar[0] = create_menu (" &File ", FileMenu, menu_entries (FileMenu), "[File Menu]");
-    MenuBar[1] = create_menu (" &View ", ViewMenu, menu_entries (ViewMenu), "[View Menu]");
-    MenuBar[2] = create_menu (" &Options ", OptMenu, menu_entries (OptMenu), "[Options Menu]");
-    MenuBar[3] = create_menu (" &Help ", HelpMenu, menu_entries (HelpMenu), "[Help Menu]");
-}
-
-/*void done_menu (void)
-{
-    int i;
-
-    for (i = 0; i < 5; i++)
-	{
-		destroy_menu (MenuBar[i]);
-	}
-}*/
-
-int main(int argc, char **argv)
-{
-	int ch;
-	init_curses();
+	ITEM **file_items;
+	ITEM **view_items;
+	ITEM **opts_items;
+	ITEM **about_items;
 	
-	if (argc = 1)
+	MENU *file_menu;
+	MENU *view_menu;
+	MENU *opts_menu;
+	MENU *about_menu;
+	
+	WINDOW *menu_bar;
+	WINDOW *file_win;
+	WINDOW *view_win;
+	WINDOW *opts_win;
+	WINDOW *about_win;
+			
+	int n_choices[4];
+	int c;
+	int i;
+	ITEM *cur_item;
+	int cur_menu;
+
+	initscr();
+	cbreak();
+	noecho();
+	start_color();
+	keypad(stdscr,TRUE);
+
+	init_pair(1, COLOR_WHITE, COLOR_BLACK);
+	init_pair(2, COLOR_RED, COLOR_WHITE);
+	init_pair(3, COLOR_BLUE, COLOR_WHITE);
+	bkgd(COLOR_PAIR(1));
+	curs_set(0);
+
+	menu_bar = subwin(stdscr,1,COLS,0,0);
+	wbkgd(menu_bar,COLOR_PAIR(2));
+	waddstr(menu_bar,"File");
+	wattron(menu_bar, COLOR_PAIR(3));
+	waddstr(menu_bar,"<F1>");
+	wattroff(menu_bar, COLOR_PAIR(3));
+	wmove(menu_bar, 0, 19);
+	waddstr(menu_bar,"View");
+	wattron(menu_bar, COLOR_PAIR(3));
+	waddstr(menu_bar,"<F2>");
+	wattroff(menu_bar, COLOR_PAIR(3));
+	wmove(menu_bar, 0, 34);
+	waddstr(menu_bar,"Options");
+	wattron(menu_bar, COLOR_PAIR(3));
+	waddstr(menu_bar,"<F3>");
+	wattroff(menu_bar, COLOR_PAIR(3));
+	wmove(menu_bar, 0, 53);
+	waddstr(menu_bar,"Help");
+	wattron(menu_bar, COLOR_PAIR(3));
+	waddstr(menu_bar,"<F4>");
+	wattroff(menu_bar, COLOR_PAIR(3));
+	
+
+	
+	n_choices[0] = ARRAY_SIZE(file_choices);
+	n_choices[1] = ARRAY_SIZE(view_choices);
+	n_choices[2] = ARRAY_SIZE(opts_choices);
+	n_choices[3] = ARRAY_SIZE(about_choices);
+	file_items = (ITEM **)calloc(n_choices[0] + 1, sizeof(ITEM *));
+	view_items = (ITEM **)calloc(n_choices[1] + 1, sizeof(ITEM *));
+	opts_items = (ITEM **)calloc(n_choices[2] + 1, sizeof(ITEM *));
+	about_items = (ITEM **)calloc(n_choices[3] + 1, sizeof(ITEM *));
+
+	for (i=0; i<n_choices[0]; ++i)
+		file_items[i] = new_item(file_choices[i], NULL); 
+	
+	for (i=0; i<n_choices[1]; ++i)
+		view_items[i] = new_item(view_choices[i], NULL); 
+	
+	for (i=0; i<n_choices[2]; ++i)
+		opts_items[i] = new_item(opts_choices[i], NULL); 
+	
+	for (i=0; i<n_choices[3]; ++i)
+		about_items[i] = new_item(about_choices[i], NULL); 
+	
+	file_items[n_choices[0]] = (ITEM *)NULL;
+	view_items[n_choices[1]] = (ITEM *)NULL;
+	opts_items[n_choices[2]] = (ITEM *)NULL;
+	about_items[n_choices[3]] = (ITEM *)NULL;
+
+	file_menu = new_menu((ITEM **)file_items);
+	view_menu = new_menu((ITEM **)view_items);
+	opts_menu = new_menu((ITEM **)opts_items);
+	about_menu = new_menu((ITEM **)about_items);
+
+	set_menu_mark(file_menu, "");
+	set_menu_mark(view_menu, "");
+	set_menu_mark(opts_menu, "");
+	set_menu_mark(about_menu, "");
+	
+	mvprintw((LINES/2)-1, (COLS/2)-28, "OOView - Prints out OpenDocuments (.odt) on your terminal");
+	mvprintw((LINES/2)  , (COLS/2)-7,  "The VERY ALPHA");
+	mvprintw((LINES/2)+2, (COLS/2)-10, "Press <x> to quit");
+
+	
+	refresh();
+
+	while ((c = getch()) != EXIT_KEY)
 	{
-		mvaddstr((LINES/2)-1,(COLS/2)-28,"OOView - Prints out OpenDocuments (.odt) on your terminal");
-		mvaddstr((LINES/2),(COLS/2)-7,"The VERY BETA");
-		mvaddstr((LINES/2)+2,(COLS/2)-10,"Press <ESC> to quit");
-	}
-	while ((ch=getch()) != KEY_F(1))
-	{
+		switch (c)
+		{
+			case KEY_F(1):
+					cur_menu=1;
+					break;
+			case KEY_F(2):
+					cur_menu=2;
+					break;
+			case KEY_F(3):
+					cur_menu=3;
+					break;
+			case KEY_F(4):
+					cur_menu=4;
+					break;
+		}
+
+		if (cur_menu == 1)
+		{
+					file_win = newwin(8,19,1,0);
+					keypad(file_win,TRUE);
+					box(file_win,0,0);
+					set_menu_win(file_menu, file_win);
+					set_menu_sub(file_menu, derwin(file_win,6,17,1,1));
+					post_menu(file_menu);
+					while (c = wgetch(file_win))
+					{
+						if (c == KEY_DOWN)
+								menu_driver(file_menu, REQ_DOWN_ITEM);
+						else if (c == KEY_UP)
+								menu_driver(file_menu, REQ_UP_ITEM);
+						else if (c == KEY_RIGHT)
+						{
+								cur_menu = 2;
+								break;
+						}
+						else if (c == KEY_LEFT)
+						{
+								cur_menu = 4;
+								break;
+						}
+						else if (c == RETURN)
+						{
+								move(LINES-1,0);
+								clrtoeol();
+								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(file_menu)));
+								break;
+						}
+						else 
+							break;
+					}			
+					unpost_menu(file_menu);
+					touchwin(stdscr);
+					werase(file_win);
+					wrefresh(file_win);
+		}
+		if (cur_menu == 2)
+		{
+					view_win = newwin(6,15,1,19);
+					keypad(view_win,TRUE);
+					box(view_win,0,0);
+					set_menu_win(view_menu, view_win);
+					set_menu_sub(view_menu, derwin(view_win,4,13,1,1));
+					post_menu(view_menu);
+					while (c = wgetch(view_win))
+					{
+						if (c == KEY_DOWN)
+								menu_driver(view_menu, REQ_DOWN_ITEM);
+						else if (c == KEY_UP)
+								menu_driver(view_menu, REQ_UP_ITEM);
+						else if (c == KEY_RIGHT)
+						{
+								cur_menu = 3;
+								break;
+						}
+						else if (c == KEY_LEFT)
+						{
+								cur_menu = 1;
+								break;
+						}
+						else if (c == RETURN)
+						{
+								move(LINES-1,0);
+								clrtoeol();
+								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(view_menu)));
+								break;
+						}
+						else 
+							break;
+					}
+					
+					unpost_menu(view_menu);
+					touchwin(stdscr);
+					werase(view_win);
+					wrefresh(view_win);
+		}
+		if (cur_menu == 3)
+		{
+					opts_win = newwin(5,19,1,34);
+					keypad(opts_win,TRUE);
+					box(opts_win,0,0);
+					set_menu_win(opts_menu, opts_win);
+					set_menu_sub(opts_menu, derwin(opts_win,3,17,1,1));
+					post_menu(opts_menu);
+					while (c = wgetch(opts_win))
+					{
+						if (c == KEY_DOWN)
+								menu_driver(opts_menu, REQ_DOWN_ITEM);
+						else if (c == KEY_UP)
+								menu_driver(opts_menu, REQ_UP_ITEM);
+						else if (c == KEY_RIGHT)
+						{
+								cur_menu = 4;
+								break;
+						}
+						else if (c == KEY_LEFT)
+						{
+								cur_menu = 2;
+								break;
+						}
+						else if (c == RETURN)
+						{
+								move(LINES-1,0);
+								clrtoeol();
+								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(opts_menu)));
+								break;
+						}
+						else 
+							break;
+					}
+					
+					unpost_menu(opts_menu);
+					touchwin(stdscr);
+					werase(opts_win);
+					wrefresh(opts_win);
+		}
+		if (cur_menu == 4)
+		{
+					about_win = newwin(6,17,1,53);
+					keypad(about_win,TRUE);
+					box(about_win,0,0);
+					set_menu_win(about_menu, about_win);
+					set_menu_sub(about_menu, derwin(about_win,4,15,1,1));
+					post_menu(about_menu);
+					while (c = wgetch(about_win))
+					{
+						if (c == KEY_DOWN)
+								menu_driver(about_menu, REQ_DOWN_ITEM);
+						else if (c == KEY_UP)
+								menu_driver(about_menu, REQ_UP_ITEM);
+						else if (c == KEY_RIGHT)
+						{
+								cur_menu = 1;
+								break;
+						}
+						else if (c == KEY_LEFT)
+						{
+								cur_menu = 3;
+								break;
+						}
+						else if (c == RETURN)
+						{
+								move(LINES-1,0);
+								clrtoeol();
+								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(about_menu)));
+								break;
+						}
+						else 
+							break;
+					}
+					
+					unpost_menu(about_menu);
+					touchwin(stdscr);
+					werase(about_win);
+					wrefresh(about_win);
+		}
 	}
 	
+
+	for (i=0; i<n_choices[0]; ++i)
+		free_item(file_items[i]);
+	
+	for (i=0; i<n_choices[1]; ++i)
+		free_item(view_items[i]);
+	
+	for (i=0; i<n_choices[2]; ++i)
+		free_item(opts_items[i]);
+
+	for (i=0; i<n_choices[3]; ++i)
+		free_item(about_items[i]);
+
+	free_menu(file_menu);
+	free_menu(view_menu);
+	free_menu(opts_menu);
+	free_menu(about_menu);
+
 	endwin();
-	return EXIT_SUCCESS;
+	return 0;
 }
-
