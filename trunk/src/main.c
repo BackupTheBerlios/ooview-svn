@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <curses.h>
 #include <menu.h>
 
@@ -35,6 +36,24 @@ char *help_choices[] = {
 };
 
 
+int print_file (FILE *ovd_file)
+{
+		int file_input;
+
+		move(1,0);
+		clrtobot();
+								
+		move(LINES-1,0);
+		clrtoeol();
+		mvprintw(LINES-1,0,"File successfully opened");
+		move(1,0);
+		while ( (file_input=fgetc(ovd_file)) != EOF)
+		{
+					addch(file_input);
+		}
+		return 0;
+}
+
 int main (int argc, char **argv)
 {
 	ITEM **file_items;
@@ -52,12 +71,15 @@ int main (int argc, char **argv)
 	WINDOW *view_win;
 	WINDOW *opts_win;
 	WINDOW *help_win;
-			
+
+	FILE *ovd_file;
+	
 	int n_choices[4];
 	int c;
 	int i;
 	ITEM *cur_item;
 	int cur_menu;
+	char *cmd;
 
 	initscr();
 	cbreak();
@@ -186,6 +208,7 @@ int main (int argc, char **argv)
 								move(LINES-1,0);
 								clrtoeol();
 								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(file_menu)));
+								cmd = (char *)item_name(current_item(file_menu));
 								break;
 						}
 						else
@@ -193,10 +216,12 @@ int main (int argc, char **argv)
 								cur_menu = 0;
 								break;
 						}
+
 					}			
+
 					unpost_menu(file_menu);
 					touchwin(stdscr);
-					refresh();
+					wrefresh(stdscr);
 		}
 		if (cur_menu == 2)
 		{
@@ -327,6 +352,34 @@ int main (int argc, char **argv)
 					touchwin(stdscr);
 					refresh();
 		}
+
+
+		if (!strcmp(cmd,"Open"))
+		{
+				char *str;
+				move(LINES-1,0);
+				clrtoeol();
+				printw("Enter file name: ");
+				curs_set(1);
+				echo();
+				getstr(str);
+				curs_set(0);
+				noecho();
+				ovd_file = fopen(str,"r");
+
+				if (ovd_file != NULL)
+				{
+						print_file(ovd_file);
+						fclose(ovd_file);
+						cmd = "";
+				}
+				else
+				{
+						printw("Error!! File does not exist. Press any key.");
+				}
+			
+		}
+
 	}
 	
 
