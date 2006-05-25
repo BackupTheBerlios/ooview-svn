@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include <curses.h>
+#include <ncurses.h>
 #include <menu.h>
+#include <string.h>
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define EXIT_KEY 0x078  /* <x> */
@@ -52,6 +53,13 @@ int print_file (FILE *ovd_file)
 					addch(file_input);
 		}
 		return 0;
+}
+
+void init_screen(void)
+{
+	mvprintw((LINES/2)-1, (COLS/2)-28, "OOView - Prints out OpenDocuments (.odt) on your terminal");
+	mvprintw((LINES/2)  , (COLS/2)-7,  "The VERY ALPHA");
+	mvprintw((LINES/2)+2, (COLS/2)-10, "Press <x> to quit");
 }
 
 int main (int argc, char **argv)
@@ -152,11 +160,8 @@ int main (int argc, char **argv)
 	set_menu_mark(view_menu, "");
 	set_menu_mark(opts_menu, "");
 	set_menu_mark(help_menu, "");
-	
-	mvprintw((LINES/2)-1, (COLS/2)-28, "OOView - Prints out OpenDocuments (.odt) on your terminal");
-	mvprintw((LINES/2)  , (COLS/2)-7,  "The VERY ALPHA");
-	mvprintw((LINES/2)+2, (COLS/2)-10, "Press <x> to quit");
 
+	init_screen();
 	
 	refresh();
 
@@ -371,7 +376,6 @@ int main (int argc, char **argv)
 				{
 						print_file(ovd_file);
 						fclose(ovd_file);
-						cmd = "";
 				}
 				else
 				{
@@ -379,6 +383,13 @@ int main (int argc, char **argv)
 				}
 			
 		}
+		if (!strcmp(cmd,"Close"))
+		{
+				move(1,0);
+				clrtobot();
+				init_screen();
+		}
+		strcpy(cmd,NULL);
 
 	}
 	
