@@ -6,6 +6,7 @@
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define EXIT_KEY 0x078  /* <x> */
 #define RETURN 0x00A
+#define HOMEPAGE_URL "www.hqp.dl.am"
 
 char *file_choices[] = {
 	"Open",
@@ -36,6 +37,26 @@ char *help_choices[] = {
 	"About OOView",
 };
 
+ITEM **file_items;
+ITEM **view_items;
+ITEM **opts_items;
+ITEM **help_items;
+
+MENU *file_menu;
+MENU *view_menu;
+MENU *opts_menu;
+MENU *help_menu;
+
+WINDOW *main_window;
+WINDOW *menu_bar;
+WINDOW *status_bar;
+WINDOW *file_win;
+WINDOW *view_win;
+WINDOW *opts_win;
+WINDOW *help_win;
+
+int n_choices[4];
+
 
 int print_file (FILE *ovd_file)
 {
@@ -43,15 +64,16 @@ int print_file (FILE *ovd_file)
 
 		move(1,0);
 		clrtobot();
-								
-		move(LINES-1,0);
-		clrtoeol();
-		mvprintw(LINES-1,0,"File successfully opened");
+						
+		werase(status_bar);
+		wprintw(status_bar,"File successfully opened");
 		move(1,0);
 		while ( (file_input=fgetc(ovd_file)) != EOF)
 		{
 					addch(file_input);
 		}
+		touchwin(status_bar);
+		wrefresh(status_bar);
 		return 0;
 }
 
@@ -62,33 +84,41 @@ void init_screen(void)
 	mvprintw((LINES/2)+2, (COLS/2)-10, "Press <x> to quit");
 }
 
+void end_curses(void)
+{
+		int i;
+		
+		for (i=0; i<n_choices[0]; ++i)
+			free_item(file_items[i]);
+		
+		for (i=0; i<n_choices[1]; ++i)
+			free_item(view_items[i]);
+		
+		for (i=0; i<n_choices[2]; ++i)
+			free_item(opts_items[i]);
+	
+		for (i=0; i<n_choices[3]; ++i)
+			free_item(help_items[i]);
+	
+		free_menu(file_menu);
+		free_menu(view_menu);
+		free_menu(opts_menu);
+		free_menu(help_menu);
+	
+		endwin();
+}
+
 int main (int argc, char **argv)
 {
-	ITEM **file_items;
-	ITEM **view_items;
-	ITEM **opts_items;
-	ITEM **help_items;
-	
-	MENU *file_menu;
-	MENU *view_menu;
-	MENU *opts_menu;
-	MENU *help_menu;
-	
-	WINDOW *menu_bar;
-	WINDOW *file_win;
-	WINDOW *view_win;
-	WINDOW *opts_win;
-	WINDOW *help_win;
-
 	FILE *ovd_file;
-	
-	int n_choices[4];
+
 	int c;
 	int i;
 	ITEM *cur_item;
 	int cur_menu;
 	char *cmd;
-
+	bool action_performed; /* fuck java ;-) */
+	bool file_printed = false;
 	initscr();
 	cbreak();
 	noecho();
@@ -98,6 +128,7 @@ int main (int argc, char **argv)
 	init_pair(1, COLOR_WHITE, COLOR_BLACK);
 	init_pair(2, COLOR_RED, COLOR_WHITE);
 	init_pair(3, COLOR_BLUE, COLOR_WHITE);
+	init_pair(4, COLOR_BLACK, COLOR_WHITE);
 	bkgd(COLOR_PAIR(1));
 	curs_set(0);
 
@@ -123,7 +154,8 @@ int main (int argc, char **argv)
 	waddstr(menu_bar,"<F4>");
 	wattroff(menu_bar, COLOR_PAIR(3));
 	
-
+	status_bar = subwin(stdscr,1,COLS,LINES-1,0);
+	wbkgd(status_bar,COLOR_PAIR(4));
 	
 	n_choices[0] = ARRAY_SIZE(file_choices);
 	n_choices[1] = ARRAY_SIZE(view_choices);
@@ -167,6 +199,8 @@ int main (int argc, char **argv)
 
 	while ((c = getch()) != EXIT_KEY)
 	{
+		action_performed = false;
+			
 		switch (c)
 		{
 			case KEY_F(1):
@@ -182,7 +216,7 @@ int main (int argc, char **argv)
 					cur_menu=4;
 					break;
 		}
-
+		
 		if (cur_menu == 1)
 		{
 					file_win = newwin(8,19,1,0);
@@ -210,10 +244,8 @@ int main (int argc, char **argv)
 						else if (c == RETURN)
 						{
 								cur_menu = 0;
-								move(LINES-1,0);
-								clrtoeol();
-								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(file_menu)));
 								cmd = (char *)item_name(current_item(file_menu));
+								action_performed = true;
 								break;
 						}
 						else
@@ -255,9 +287,8 @@ int main (int argc, char **argv)
 						else if (c == RETURN)
 						{
 								cur_menu = 0;
-								move(LINES-1,0);
-								clrtoeol();
-								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(view_menu)));
+								cmd = (char *)item_name(current_item(view_menu));
+								action_performed = true;
 								break;
 						}
 						else
@@ -298,9 +329,8 @@ int main (int argc, char **argv)
 						else if (c == RETURN)
 						{
 								cur_menu = 0;
-								move(LINES-1,0);
-								clrtoeol();
-								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(opts_menu)));
+								cmd = (char *)item_name(current_item(opts_menu));
+								action_performed = true;
 								break;
 						}
 						else
@@ -341,9 +371,8 @@ int main (int argc, char **argv)
 						else if (c == RETURN)
 						{
 								cur_menu = 0;
-								move(LINES-1,0);
-								clrtoeol();
-								mvprintw(LINES-1,0,"Selected Item is %s",item_name(current_item(help_menu)));
+								cmd = (char *)item_name(current_item(help_menu));
+								action_performed = true;
 								break;
 						}
 						else
@@ -358,59 +387,86 @@ int main (int argc, char **argv)
 					refresh();
 		}
 
-
-		if (!strcmp(cmd,"Open"))
+		if (action_performed)
 		{
-				char *str;
-				move(LINES-1,0);
-				clrtoeol();
-				printw("Enter file name: ");
-				curs_set(1);
-				echo();
-				getstr(str);
-				curs_set(0);
-				noecho();
-				ovd_file = fopen(str,"r");
 
-				if (ovd_file != NULL)
+				if (!strcmp(cmd,"Open"))
 				{
-						print_file(ovd_file);
-						fclose(ovd_file);
+						char *str;
+						werase(status_bar);
+						wprintw(status_bar,"Enter file name: ");
+						wmove(status_bar,0,17);
+						touchwin(status_bar);
+						wrefresh(status_bar);
+						curs_set(1);
+						echo();
+						wgetstr(status_bar,str);
+						curs_set(0);
+						noecho();
+						ovd_file = fopen(str,"r");
+
+						if (ovd_file != NULL)
+						{
+								print_file(ovd_file);
+								file_printed = true;
+								fclose(ovd_file);
+						}
+						else
+						{
+								werase(status_bar);
+								wprintw(status_bar,"Error!! File does not exist. Press any key.");
+								wrefresh(status_bar);
+						}
+					
 				}
-				else
+				if (!strcmp(cmd,"Close"))
 				{
-						printw("Error!! File does not exist. Press any key.");
+						touchwin(menu_bar);
+						werase(stdscr);
+						wrefresh(menu_bar);
+						init_screen();
 				}
-			
+				if (!strcmp(cmd,"Reload"))
+				{
+						if (file_printed)
+						{
+								if (ovd_file != NULL)
+								{
+										print_file(ovd_file);
+										file_printed = true;
+										fclose(ovd_file);
+								}
+								else
+								{
+										werase(status_bar);
+										wprintw(status_bar,"Error!! File does not exist. Press any key.");
+										wrefresh(status_bar);
+								}
+
+						}
+						else
+						{
+								mvwprintw(status_bar,0,0,"No open file!!");
+								touchwin(status_bar);
+								wrefresh(status_bar);
+						}
+				}
+				if (!strcmp(cmd,"OOView homepage"))
+				{
+						werase(status_bar);
+						mvwprintw(status_bar,0,0,HOMEPAGE_URL);
+						wrefresh(status_bar);
+				}
+						
+				if (!strcmp(cmd,"Exit"))
+				{
+				end_curses();
+						return 0;
+				}
 		}
-		if (!strcmp(cmd,"Close"))
-		{
-				move(1,0);
-				clrtobot();
-				init_screen();
-		}
-		strcpy(cmd,NULL);
 
 	}
-	
 
-	for (i=0; i<n_choices[0]; ++i)
-		free_item(file_items[i]);
-	
-	for (i=0; i<n_choices[1]; ++i)
-		free_item(view_items[i]);
-	
-	for (i=0; i<n_choices[2]; ++i)
-		free_item(opts_items[i]);
-
-	for (i=0; i<n_choices[3]; ++i)
-		free_item(help_items[i]);
-
-	free_menu(file_menu);
-	free_menu(view_menu);
-	free_menu(opts_menu);
-	free_menu(help_menu);
-
-	endwin();
+	end_curses();
 	return 0;
 }
