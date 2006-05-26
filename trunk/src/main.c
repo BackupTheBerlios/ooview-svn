@@ -47,7 +47,7 @@ MENU *view_menu;
 MENU *opts_menu;
 MENU *help_menu;
 
-WINDOW *main_window;
+WINDOW *main_win;
 WINDOW *menu_bar;
 WINDOW *status_bar;
 WINDOW *file_win;
@@ -57,31 +57,37 @@ WINDOW *help_win;
 
 int n_choices[4];
 
+void print_status_bar(char *text)
+{
+		werase(status_bar);
+		wprintw(status_bar, text);
+		wrefresh(status_bar);
+		
+}
 
 int print_file (FILE *ovd_file)
 {
 		int file_input;
 
-		move(1,0);
-		clrtobot();
+		main_win = subwin(stdscr,LINES-2,COLS,1,0);
+		scrollok(main_win,TRUE);
 						
-		werase(status_bar);
-		wprintw(status_bar,"File successfully opened");
-		move(1,0);
+		print_status_bar("File successfully opened");
 		while ( (file_input=fgetc(ovd_file)) != EOF)
 		{
-					addch(file_input);
+					waddch(main_win,file_input);
 		}
-		touchwin(status_bar);
-		wrefresh(status_bar);
+		wscrl(main_win,1);
+		touchwin(main_win);
+		wrefresh(main_win);
 		return 0;
 }
 
 void init_screen(void)
 {
-	mvprintw((LINES/2)-1, (COLS/2)-28, "OOView - Prints out OpenDocuments (.odt) on your terminal");
-	mvprintw((LINES/2)  , (COLS/2)-7,  "The VERY ALPHA");
-	mvprintw((LINES/2)+2, (COLS/2)-10, "Press <x> to quit");
+	mvprintw((LINES/2)-3, (COLS/2)-28, "OOView - Prints out OpenDocuments (odt) on your terminal");
+	mvprintw((LINES/2)-2  , (COLS/2)-9,  "The VERY ALPHA");
+	mvprintw((LINES/2), (COLS/2)-10, "Press <x> to quit");
 }
 
 void end_curses(void)
@@ -131,7 +137,7 @@ int main (int argc, char **argv)
 	init_pair(4, COLOR_BLACK, COLOR_WHITE);
 	bkgd(COLOR_PAIR(1));
 	curs_set(0);
-
+	
 	menu_bar = subwin(stdscr,1,COLS,0,0);
 	wbkgd(menu_bar,COLOR_PAIR(2));
 	waddstr(menu_bar,"File");
@@ -200,7 +206,7 @@ int main (int argc, char **argv)
 	while ((c = getch()) != EXIT_KEY)
 	{
 		action_performed = false;
-			
+		
 		switch (c)
 		{
 			case KEY_F(1):
@@ -214,6 +220,12 @@ int main (int argc, char **argv)
 					break;
 			case KEY_F(4):
 					cur_menu=4;
+					break;
+			case KEY_UP:
+					wscrl(main_win,1);
+					break;
+			case KEY_DOWN:
+					wscrl(main_win,-1);
 					break;
 		}
 		
@@ -387,49 +399,26 @@ int main (int argc, char **argv)
 					refresh();
 		}
 
+
+		
+		
 		if (action_performed)
 		{
 
 				if (!strcmp(cmd,"Open"))
 				{
 						char *str;
-						werase(status_bar);
-						wprintw(status_bar,"Enter file name: ");
-						wmove(status_bar,0,17);
-						touchwin(status_bar);
-						wrefresh(status_bar);
+						print_status_bar("Enter a file: ");
 						curs_set(1);
 						echo();
 						wgetstr(status_bar,str);
 						curs_set(0);
 						noecho();
-						ovd_file = fopen(str,"r");
 
-						if (ovd_file != NULL)
+						if (strstr(str,".ovd")!=NULL)
 						{
-								print_file(ovd_file);
-								file_printed = true;
-								fclose(ovd_file);
-						}
-						else
-						{
-								werase(status_bar);
-								wprintw(status_bar,"Error!! File does not exist. Press any key.");
-								wrefresh(status_bar);
-						}
-					
-				}
-				if (!strcmp(cmd,"Close"))
-				{
-						touchwin(menu_bar);
-						werase(stdscr);
-						wrefresh(menu_bar);
-						init_screen();
-				}
-				if (!strcmp(cmd,"Reload"))
-				{
-						if (file_printed)
-						{
+								ovd_file = fopen(str,"r");
+		
 								if (ovd_file != NULL)
 								{
 										print_file(ovd_file);
@@ -438,24 +427,48 @@ int main (int argc, char **argv)
 								}
 								else
 								{
-										werase(status_bar);
-										wprintw(status_bar,"Error!! File does not exist. Press any key.");
-										wrefresh(status_bar);
+										print_status_bar("File does not exist!");
+								}
+						}
+						else
+						{
+								print_status_bar("Must be a OOView-file (ovd) or OpenDocument-file (odt)!");	
+						}
+					
+				}
+				if (!strcmp(cmd,"Close"))
+				{
+						werase(main_win);
+						init_screen();
+						wrefresh(main_win);
+						file_printed = false;
+				}
+				if (!strcmp(cmd,"Reload"))
+				{
+						if (file_printed)
+						{
+								char *str;
+								ovd_file = fopen(str,"r");
+								if (ovd_file != NULL)
+								{
+										print_file(ovd_file);
+										file_printed = true;
+										fclose(ovd_file);
+								}
+								else
+								{
+										print_status_bar("File does not exist!");
 								}
 
 						}
 						else
 						{
-								mvwprintw(status_bar,0,0,"No open file!!");
-								touchwin(status_bar);
-								wrefresh(status_bar);
+								print_status_bar("No open file!");
 						}
 				}
 				if (!strcmp(cmd,"OOView homepage"))
 				{
-						werase(status_bar);
-						mvwprintw(status_bar,0,0,HOMEPAGE_URL);
-						wrefresh(status_bar);
+						print_status_bar(HOMEPAGE_URL);
 				}
 						
 				if (!strcmp(cmd,"Exit"))
