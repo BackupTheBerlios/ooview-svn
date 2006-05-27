@@ -5,6 +5,9 @@
 <pb> #Pagebreak, Seitenumbruch
 <tab> #Tabulator
 <fgcolor=red>This is a red Text now</fgcolor>This text is document default color!!!!!
+
+
+
 <bgcolor=black>Text with black background</bgcolor>
 <bold>Bold Text</bold> #Fett
 <ul>This Text is underlined</ul> #unterstrichen
@@ -17,8 +20,3 @@
 <pb> #Pagebreak, Seitenumbruch
 <tab> #Tabulator
 <fgcolor=red>This is a red Text now</fgcolor>This text is document default color!!!!!
-<bgcolor=black>Text with black background</bgcolor>
-<bold>Bold Text</bold> #Fett
-<ul>This Text is underlined</ul> #unterstrichen
-<pb> #Pagebreak, Seitenumbruch
-<tab> #Tabulator

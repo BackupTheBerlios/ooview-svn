@@ -1,12 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <ncurses.h>
 #include <menu.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define EXIT_KEY 0x078  /* <x> */
 #define RETURN 0x00A
-#define HOMEPAGE_URL "www.hqp.dl.am"
+#define NEWLINE 10
+#define HOMEPAGE_URL "http://ooview.berlios.de"
 
 char *file_choices[] = {
 	"Open",
@@ -57,27 +61,74 @@ WINDOW *help_win;
 
 int n_choices[4];
 
+struct fileinfo
+{
+		char *content;
+		int cur_line;
+		int lines;
+};
+
+#define clear_status_bar() print_status_bar("");
+
 void print_status_bar(char *text)
 {
 		werase(status_bar);
 		wprintw(status_bar, text);
-		wrefresh(status_bar);
-		
+		touchwin(status_bar);
+		wrefresh(status_bar);	
 }
 
-int print_file (FILE *ovd_file)
+void print_site (int cur_line, int lines)
 {
-		int file_input;
+		werase(status_bar);
+		mvwprintw(status_bar,0,(COLS/2),"%d - %d",cur_line,lines);
+		touchwin(status_bar);
+		wrefresh(status_bar);
+}
 
-		main_win = subwin(stdscr,LINES-2,COLS,1,0);
-		scrollok(main_win,TRUE);
-						
+void get_file_info (FILE *ovd_file, char *filename, struct fileinfo *buffer)
+{
+		char *file_input;
+		struct stat attribut;
+		stat(filename,&attribut);
+		buffer->lines = 0;
+		buffer->cur_line = 1;
+		
+		file_input = (char *)malloc(COLS*sizeof(char));
+		buffer->content = (char *)malloc(attribut.st_size);
+	
+		werase(main_win);
+		
 		print_status_bar("File successfully opened");
-		while ( (file_input=fgetc(ovd_file)) != EOF)
+		while ( (fgets(file_input,COLS+1,ovd_file)) != NULL)
 		{
-					waddch(main_win,file_input);
+				buffer->lines++;
+				strcat(buffer->content,file_input);
 		}
-		wscrl(main_win,1);
+}
+
+int print_file (struct fileinfo *buffer, char *cur_char)
+{	
+		int output;
+		int i = 0;
+		int lines_to_write = COLS;
+				
+		werase(main_win);
+
+		do {
+				i = 0;
+				
+				do {
+						output = *cur_char;
+						if (output==0)
+								break;
+						waddch(main_win,output);
+						cur_char++;
+						i++;
+				} while ((output!=10) && (i<COLS));
+				lines_to_write--;
+		} while ((lines_to_write!=0) && (output!=0));
+	
 		touchwin(main_win);
 		wrefresh(main_win);
 		return 0;
@@ -117,16 +168,19 @@ void end_curses(void)
 int main (int argc, char **argv)
 {
 	FILE *ovd_file;
+	ITEM *cur_item;
+	struct fileinfo *buffer;
 
+	char *cur_char;
 	int c;
 	int i;
-	ITEM *cur_item;
-	int cur_menu;
+	int cur_menu = 0;
 	char *cmd;
 	bool action_performed; /* fuck java ;-) */
 	bool file_printed = false;
+	
 	initscr();
-	cbreak();
+	raw();
 	noecho();
 	start_color();
 	keypad(stdscr,TRUE);
@@ -206,7 +260,7 @@ int main (int argc, char **argv)
 	while ((c = getch()) != EXIT_KEY)
 	{
 		action_performed = false;
-		
+	
 		switch (c)
 		{
 			case KEY_F(1):
@@ -222,10 +276,54 @@ int main (int argc, char **argv)
 					cur_menu=4;
 					break;
 			case KEY_UP:
-					wscrl(main_win,1);
+					if ((file_printed) && (buffer->cur_line>1))
+					{
+							int backsteps = 0;
+							int steps;
+
+							if ((*--cur_char)==10)
+								backsteps++;
+
+							do {
+									cur_char--;
+									backsteps++;
+							} while (((*cur_char)!=10) && (cur_char!=buffer->content));
+						
+							if (backsteps > COLS)
+							{
+									steps = backsteps%COLS;
+									mvwprintw(status_bar,0,0,"%d",steps);
+									touchwin(status_bar);
+									wrefresh(status_bar);
+									cur_char += backsteps;
+									cur_char -= steps;
+							}
+	
+							buffer->cur_line--;
+							print_site(buffer->cur_line, buffer->lines);
+							if (cur_char!=buffer->content)
+									print_file(buffer,++cur_char);
+							else
+									print_file(buffer,cur_char);
+					}
 					break;
 			case KEY_DOWN:
-					wscrl(main_win,-1);
+					if ((file_printed) && (buffer->cur_line<buffer->lines))
+					{
+							int cols=0;
+							
+							
+							while (((*cur_char)!=10) && (cols<COLS-1))
+							{		
+									cols++;
+									cur_char++;
+							}
+						
+							
+							buffer->cur_line++;
+							print_site(buffer->cur_line, buffer->lines);
+							print_file(buffer,++cur_char);
+					}
 					break;
 		}
 		
@@ -404,41 +502,55 @@ int main (int argc, char **argv)
 		
 		if (action_performed)
 		{
+				char file[80];
+				clear_status_bar();
 
 				if (!strcmp(cmd,"Open"))
 				{
-						char *str;
-						print_status_bar("Enter a file: ");
-						curs_set(1);
-						echo();
-						wgetstr(status_bar,str);
-						curs_set(0);
-						noecho();
-
-						if (strstr(str,".ovd")!=NULL)
+						if (file_printed==false)
 						{
-								ovd_file = fopen(str,"r");
-		
-								if (ovd_file != NULL)
+								print_status_bar("Enter a file: ");
+								curs_set(1);
+								echo();
+								wscanw(status_bar,"%s",file);
+								curs_set(0);
+								noecho();
+			
+								if (strstr(file,".ovd")!=NULL)
 								{
-										print_file(ovd_file);
-										file_printed = true;
-										fclose(ovd_file);
+										ovd_file = fopen(file,"r");
+
+										if (ovd_file != NULL)
+										{
+												buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
+												main_win = subwin(stdscr,LINES-2,COLS,1,0);
+												get_file_info(ovd_file, file, buffer);
+												close(ovd_file);
+												cur_char = buffer->content;
+												print_site(buffer->cur_line, buffer->lines);
+												print_file(buffer,cur_char);
+												file_printed = true;
+										}
+										else
+										{
+												print_status_bar("File does not exist!");
+										}
 								}
 								else
 								{
-										print_status_bar("File does not exist!");
+										print_status_bar("Must be a OOView-file (ovd) or OpenDocument-file (odt)!");	
 								}
 						}
 						else
 						{
-								print_status_bar("Must be a OOView-file (ovd) or OpenDocument-file (odt)!");	
+								print_status_bar("Please close current file.");
 						}
 					
 				}
 				if (!strcmp(cmd,"Close"))
 				{
 						werase(main_win);
+						free(buffer);
 						init_screen();
 						wrefresh(main_win);
 						file_printed = false;
@@ -447,13 +559,16 @@ int main (int argc, char **argv)
 				{
 						if (file_printed)
 						{
-								char *str;
-								ovd_file = fopen(str,"r");
+								ovd_file = fopen(file,"r");
+								
 								if (ovd_file != NULL)
 								{
-										print_file(ovd_file);
+										
+										get_file_info(ovd_file,file,buffer);
 										file_printed = true;
 										fclose(ovd_file);
+										cur_char = buffer->content;
+										print_file(buffer,cur_char);
 								}
 								else
 								{
@@ -473,13 +588,17 @@ int main (int argc, char **argv)
 						
 				if (!strcmp(cmd,"Exit"))
 				{
-				end_curses();
+						if (file_printed)
+								free(buffer);
+						end_curses();
 						return 0;
 				}
 		}
 
 	}
-
+	if (file_printed)
+			free(buffer);
+	
 	end_curses();
 	return 0;
 }
