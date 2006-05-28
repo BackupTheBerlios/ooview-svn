@@ -136,9 +136,14 @@ int print_file (struct fileinfo *buffer, char *cur_char)
 
 void init_screen(void)
 {
-	mvprintw((LINES/2)-3, (COLS/2)-28, "OOView - Prints out OpenDocuments (odt) on your terminal");
-	mvprintw((LINES/2)-2  , (COLS/2)-9,  "The VERY ALPHA");
-	mvprintw((LINES/2), (COLS/2)-10, "Press <x> to quit");
+		attron(A_BOLD|A_UNDERLINE);
+		mvprintw((LINES/2)-3, (COLS/2)-28, "OOView - Prints out OpenDocuments (odt) on your terminal");
+		attroff(A_UNDERLINE);
+		attron(A_BLINK);
+		mvprintw((LINES/2)-2  , (COLS/2)-9,  "The VERY ALPHA");
+		attroff(A_BLINK);
+		mvprintw((LINES/2), (COLS/2)-10, "Press <x> to quit");
+		attroff(A_BOLD);
 }
 
 void end_curses(void)
@@ -276,7 +281,7 @@ int main (int argc, char **argv)
 					cur_menu=4;
 					break;
 			case KEY_UP:
-					if ((file_printed) && (buffer->cur_line>1))
+					if ((file_printed) && (buffer->cur_line > 1))
 					{
 							int backsteps = 0;
 							int steps;
@@ -287,7 +292,7 @@ int main (int argc, char **argv)
 							do {
 									cur_char--;
 									backsteps++;
-							} while (((*cur_char)!=10) && (cur_char!=buffer->content));
+							} while (((*cur_char)!=10) && (cur_char != buffer->content));
 						
 							if (backsteps > COLS)
 							{
@@ -301,19 +306,20 @@ int main (int argc, char **argv)
 	
 							buffer->cur_line--;
 							print_site(buffer->cur_line, buffer->lines);
-							if (cur_char!=buffer->content)
+							
+							if (cur_char!=buffer->content)	
 									print_file(buffer,++cur_char);
 							else
 									print_file(buffer,cur_char);
 					}
 					break;
 			case KEY_DOWN:
-					if ((file_printed) && (buffer->cur_line<buffer->lines))
+					if ((file_printed) && (buffer->cur_line < buffer->lines))
 					{
 							int cols=0;
 							
 							
-							while (((*cur_char)!=10) && (cols<COLS-1))
+							while (((*cur_char)!=10) && (cols < COLS-1))
 							{		
 									cols++;
 									cur_char++;
@@ -549,11 +555,18 @@ int main (int argc, char **argv)
 				}
 				if (!strcmp(cmd,"Close"))
 				{
-						werase(main_win);
-						free(buffer);
-						init_screen();
-						wrefresh(main_win);
-						file_printed = false;
+						if (file_printed)
+						{
+								werase(main_win);
+								free(buffer);
+								init_screen();
+								wrefresh(main_win);
+								file_printed = false;
+						}
+						else
+						{
+								print_status_bar("No open file!");
+						}
 				}
 				if (!strcmp(cmd,"Reload"))
 				{
