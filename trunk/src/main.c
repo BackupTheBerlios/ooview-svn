@@ -86,6 +86,19 @@ void print_site (int cur_line, int lines)
 		wrefresh(status_bar);
 }
 
+FILE *open_odt (char *filename)
+{
+		FILE *tmp;
+		char unzip_cmd[255] = "unzip -u -d /tmp/ooview ";
+		strcat(unzip_cmd,filename);
+		strcat(unzip_cmd," >> $HOME/.ooview_log");
+		system(unzip_cmd);
+
+		tmp = fopen ("/tmp/ooview/content.xml","r");
+		return tmp;
+		
+}
+
 void get_file_info (FILE *ovd_file, char *filename, struct fileinfo *buffer)
 {
 		char *file_input;
@@ -173,6 +186,7 @@ void end_curses(void)
 int main (int argc, char **argv)
 {
 	FILE *ovd_file;
+	FILE *content_file;
 	ITEM *cur_item;
 	struct fileinfo *buffer;
 
@@ -518,29 +532,45 @@ int main (int argc, char **argv)
 								print_status_bar("Enter a file: ");
 								curs_set(1);
 								echo();
-								wscanw(status_bar,"%s",file);
+								wscanw(status_bar,"%s",file);			/* get filename from user */
 								curs_set(0);
 								noecho();
 			
-								if (strstr(file,".ovd")!=NULL)
+								if ((strstr(file,".ovd")!=NULL) || (strstr(file,".odt")!=NULL) )  /* check whether it's a ovd or odt*/
 								{
-										ovd_file = fopen(file,"r");
-
-										if (ovd_file != NULL)
+										if (strstr(file,".ovd")!=NULL)			/* ovd*/
+										{
+												ovd_file = fopen(file,"r");
+	
+												if (ovd_file != NULL)
+												{
+														buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
+														main_win = subwin(stdscr,LINES-2,COLS,1,0);
+														get_file_info(ovd_file, file, buffer);
+														close(ovd_file);
+														cur_char = buffer->content;
+														print_site(buffer->cur_line, buffer->lines);
+														print_file(buffer,cur_char);
+														file_printed = true;
+												}
+												else
+												{
+														print_status_bar("File does not exist!");
+												}
+										}
+										else								/* else if odt */
 										{
 												buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
-												main_win = subwin(stdscr,LINES-2,COLS,1,0);
-												get_file_info(ovd_file, file, buffer);
-												close(ovd_file);
+												main_win= subwin(stdscr,LINES-2,COLS,1,0);
+												content_file = open_odt(file);
+												get_file_info(content_file, file, buffer);
+												close(content_file);
 												cur_char = buffer->content;
 												print_site(buffer->cur_line, buffer->lines);
 												print_file(buffer,cur_char);
 												file_printed = true;
 										}
-										else
-										{
-												print_status_bar("File does not exist!");
-										}
+										
 								}
 								else
 								{
@@ -557,11 +587,17 @@ int main (int argc, char **argv)
 				{
 						if (file_printed)
 						{
+								if (strstr(file,".ovd")!=NULL)
+								{			
+										free(buffer);
+								}
+
 								werase(main_win);
-								free(buffer);
 								init_screen();
 								wrefresh(main_win);
 								file_printed = false;
+								
+
 						}
 						else
 						{
