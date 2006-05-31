@@ -137,11 +137,6 @@ void get_file_content (FILE *ovd_file, char *filename, struct fileinfo *buffer)
 		}
 }
 
-void get_file_meta (FILE* odt_file, struct fileinfo *buffer)
-{
-		
-}
-
 int print_file (struct fileinfo *buffer, char *cur_char)
 {	
 		int output;
@@ -601,7 +596,7 @@ int main (int argc, char **argv)
 												get_file_meta("/tmp/ooview/meta.xml",buffer);
 												close(odt_file);
 												cur_char = buffer->content;
-												print_site(buffer->cur_line, buffer->lines);
+												/*print_site(buffer->cur_line, buffer->lines);*/
 												print_file(buffer,cur_char);
 												file_printed = true;
 										}

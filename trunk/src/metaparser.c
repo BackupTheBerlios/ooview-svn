@@ -6,66 +6,64 @@
 
 #include "metaparser.h"
 
-void parseText (xmlDocPtr doc, xmlNodePtr cur) {
+void parseText (xmlDocPtr doc, xmlNodePtr cur, struct fileinfo *buffer) {
 
 	xmlChar *key;
+	FILE *meta_inf;
 	
-	while (xmlStrcmp(cur->name,(const xmlChar *)"user-defined") ) {
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"generator"))) {
+	if ((meta_inf = fopen("/tmp/ooview/meta.inf","wb")) != NULL)
+	{
+			while (xmlStrcmp(cur->name,(const xmlChar *)"user-defined") )
+			{
+			    if ((!xmlStrcmp(cur->name, (const xmlChar *)"generator"))) {
+			
+					key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-		    printf("%s\n", key);
-		    xmlFree(key);			
- 	    }
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"initial-creator"))) {
-
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-		    printf("%s\n", key);
-		    xmlFree(key);			
- 	    }
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"creation-date"))) {
-
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-		    printf("%s\n", key);
-		    xmlFree(key);			
- 	    }
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"creator"))) {
-
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-		    printf("%s\n", key);
-		    xmlFree(key);			
- 	    }
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"date"))) {
-
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-		    printf("%s\n", key);
-		    xmlFree(key);			
- 	    }
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"language"))) {
-
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-		    printf("%s\n", key);
-		    xmlFree(key);			
- 	    }
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"editing-cycles"))) {
-
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-		    printf("%s\n", key);
-		    xmlFree(key);			
- 	    }
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"editing-duration"))) {
-
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-		    printf("%s\n", key);
-		    xmlFree(key);			
- 	    }
-
-	cur = cur->next;
+					xmlFree(key);			
+ 			    }
+			    if ((!xmlStrcmp(cur->name, (const xmlChar *)"initial-creator"))) {
+		
+					key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+				    xmlFree(key);			
+ 			    }
+			    if ((!xmlStrcmp(cur->name, (const xmlChar *)"creation-date"))) {
+		
+					key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+				    xmlFree(key);			
+ 		   		 }
+				    if ((!xmlStrcmp(cur->name, (const xmlChar *)"creator"))) {
+		
+					key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+				    xmlFree(key);			
+	 		    }
+			    if ((!xmlStrcmp(cur->name, (const xmlChar *)"date"))) {
+		
+					key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+				    xmlFree(key);			
+ 			    }
+				    if ((!xmlStrcmp(cur->name, (const xmlChar *)"language"))) {
+		
+					key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+				    xmlFree(key);			
+ 			    }
+			    if ((!xmlStrcmp(cur->name, (const xmlChar *)"editing-cycles"))) {
+		
+					key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+				    xmlFree(key);			
+ 			    }
+			    if ((!xmlStrcmp(cur->name, (const xmlChar *)"editing-duration"))) {
+		
+					key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+				    xmlFree(key);			
+ 			    }
+	
+				cur = cur->next;
+			}
 	}
     return;
 }
 
-static void parseDoc(char *docname, struct fileinfo *buffer) {
+void get_file_meta(char *docname, struct fileinfo *buffer) {
 
 	xmlDocPtr doc;
 	xmlNodePtr cur;
@@ -73,20 +71,20 @@ static void parseDoc(char *docname, struct fileinfo *buffer) {
 	doc = xmlParseFile(docname);
 	
 	if (doc == NULL ) {
-		fprintf(stderr,"Document not parsed successfully. \n");
+		print_status_bar("Document not parsed successfully.");
 		return;
 	}
 	
 	cur = xmlDocGetRootElement(doc);
 	
 	if (cur == NULL) {
-		fprintf(stderr,"empty document\n");
+		print_status_bar("empty document.");
 		xmlFreeDoc(doc);
 		return;
 	}
 	
 	if (xmlStrcmp(cur->name, (const xmlChar *) "document-meta")) {					/* root-element überprüfen */
-		fprintf(stderr,"document of the wrong type, root node != document-meta");
+		print_status_bar("Document of the wrong type, root node != document-meta");
 		xmlFreeDoc(doc);
 		return;
 	}
@@ -96,10 +94,11 @@ static void parseDoc(char *docname, struct fileinfo *buffer) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"meta"))){		/* so lange durchlaufen bis er den meta tag findet */
 			cur = cur->xmlChildrenNode;								/* noch eine ebene tiefer */
 			
-			parseText (doc, cur);
+			parseText (doc, cur, buffer);
 				
 		}
-		if (cur != NULL) cur = cur->next;
+		if (cur != NULL)
+				cur = cur->next;
 	}
 	
 	xmlFreeDoc(doc);

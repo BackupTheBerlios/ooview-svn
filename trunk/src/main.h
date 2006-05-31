@@ -1,3 +1,6 @@
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
 int n_choices[4];
 
 char *logfilepath;
@@ -28,7 +31,6 @@ void print_statsu_bar (char *text);
 void print_site (int cur_line, int lines);
 FILE *open_odt (char *filename);
 void get_file_content (FILE *ovd_file, char *filename, struct fileinfo *buffer);
-void get_file_meta (FILE *odt_file, struct fileinfo *buffer);
 int print_file (struct fileinfo *buffer, char *cur_char);
 void init_screen(void);
 void end_curses(void);
