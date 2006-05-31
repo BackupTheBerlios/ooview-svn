@@ -374,6 +374,14 @@ int main (int argc, char **argv)
 							print_file(buffer,++cur_char);
 					}
 					break;
+			default:
+					if (meta_win!=NULL)
+					{
+							delwin(meta_win);
+							touchwin(stdscr);
+							refresh();
+					}
+					
 		}
 		
 		if (cur_menu == 1)
@@ -596,7 +604,7 @@ int main (int argc, char **argv)
 												get_file_meta("/tmp/ooview/meta.xml",buffer);
 												close(odt_file);
 												cur_char = buffer->content;
-												/*print_site(buffer->cur_line, buffer->lines);*/
+												print_site(buffer->cur_line, buffer->lines);
 												print_file(buffer,cur_char);
 												file_printed = true;
 										}
@@ -665,7 +673,22 @@ int main (int argc, char **argv)
 				{
 						if (file_printed)
 						{
+								
+								meta_win = newwin(9,COLS-2,(LINES/2)-5,1);
+								wbkgd(meta_win,COLOR_PAIR(4));
+								
 
+								mvwprintw(meta_win,1,1,"Genarator:  %s", buffer->generator);
+								mvwprintw(meta_win,2,1,"Initial creator:\t%s", buffer->initial_creator);
+								mvwprintw(meta_win,3,1,"Creation date:\t\t%s", buffer->creation_date);
+								mvwprintw(meta_win,4,1,"Creator:\t\t%s", buffer->creator);
+								mvwprintw(meta_win,5,1,"Date:\t\t\t%s", buffer->date);
+								mvwprintw(meta_win,6,1,"Editing cycles:\t%s", buffer->editing_cycles);
+								mvwprintw(meta_win,7,1,"Editing duration:\t%s", buffer->editing_duration);
+								
+								box(meta_win,0,0);
+								wrefresh(meta_win);
+								touchwin(meta_win);
 						}
 						else
 						{
