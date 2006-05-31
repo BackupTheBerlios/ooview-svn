@@ -1,4 +1,3 @@
-
 char *file_choices[] = {
 	"Open",
 	"Close",
