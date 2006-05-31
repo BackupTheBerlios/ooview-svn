@@ -3,7 +3,7 @@ BINDIR=bin
 
 GCC = /usr/bin/gcc
 GCCOPTS = -lmenu -lncurses -lxml2
-GCCNOLINK = -ansi -Werror -I/usr/include/libxml2 -c
+GCCNOLINK = -ansi -I/usr/include/libxml2 -c
 RM = rm -f
 
 bin/ooview: $(SOURCEFILES)
