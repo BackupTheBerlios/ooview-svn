@@ -11,14 +11,14 @@ void parseText (xmlDocPtr doc, xmlNodePtr cur, struct fileinfo *buffer) {
 	xmlChar *key;
 	FILE *meta_inf;
 	
-	if ((meta_inf = fopen("/tmp/ooview/meta.inf","wb")) != NULL)
+	if ((meta_inf = fopen("/tmp/ooview/meta.inf","wt")) != NULL)
 	{
 			while (xmlStrcmp(cur->name,(const xmlChar *)"user-defined") )
 			{
 			    if ((!xmlStrcmp(cur->name, (const xmlChar *)"generator"))) {
 			
 					key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-
+					fprintf(meta_inf, "generator: %s\n", key);
 					xmlFree(key);			
  			    }
 			    if ((!xmlStrcmp(cur->name, (const xmlChar *)"initial-creator"))) {
