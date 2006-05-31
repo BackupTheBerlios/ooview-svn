@@ -3,5 +3,5 @@
 
 #include "main.h"
 
-void parseText (xmlDocPtr doc, xmlNodePtr cur, struct fileinfo *buffer);
+void parseText (xmlDocPtr doc, xmlNodePtr cur);
 void get_file_meta (char *docname, struct fileinfo *buffer);
