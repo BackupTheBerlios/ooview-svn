@@ -146,10 +146,8 @@ void get_file_meta(char *docname, struct fileinfo *buffer) {
 											strcpy(buffer->editing_duration,file_input);
 											break;
 							}
-							print_status_bar(buffer->initial_creator);
 							
 					}
-					
 			}
 			
 		}
