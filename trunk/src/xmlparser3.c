@@ -1,6 +1,5 @@
 /* 
- * odt-dokument enpacken; 
- * zb 
+ * odt-dokument enpacken;  * zb 
  * mkdir test; unzip -x test.odt -d test
  * $ ./xmlparser test/content.xml
  * kompilieren mit gcc -I/usr/include/libxml2 xmlparser3.c -o xmlparser3 -lxml2
@@ -14,30 +13,40 @@
 
 void parseText (xmlDocPtr doc, xmlNodePtr cur) {
 
-	xmlChar *key;
+	xmlChar *k1;
+	xmlChar *k;
+	xmlChar *k2;
+	char *c1 = "";
+	char *c2 = "";
+	char *c3;
 	cur = cur->xmlChildrenNode;
 	xmlNodePtr temp_cur = cur;
-	while (cur != NULL) {
-	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"p"))) {
 
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-		    printf("p   : %s\n", key);
-		    xmlFree(key);
-					
+	
+	while (cur != NULL) {
+			
+	   	if ((!xmlStrcmp(cur->name, (const xmlChar *)"p"))) {
+				
 			temp_cur = cur->xmlChildrenNode;
 			while (temp_cur != NULL) {
-				if ((!xmlStrcmp(temp_cur->name, (const xmlChar *)"span"))){
-		//			temp_cur = temp_cur->xmlChildrenNode;
-					key = xmlNodeListGetString(doc, temp_cur->xmlChildrenNode, 1);
-					printf("span: %s\n", key);
-				}				 
+					
+				if (!xmlStrcmp(temp_cur->name, (const xmlChar*)"span")) {
+					k1 = xmlNodeListGetString(doc, temp_cur->xmlChildrenNode, 1);
+					//c1 = (char*)k1;
+					printf("%s", k1);
+					xmlFree(k1);										
+				}else {
+					 k2 = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+					// c2 = (char*)k2;
+					 printf("%s",k2);
+	                 xmlFree(k2);
+				}
 				temp_cur = temp_cur->next;
 			}
-	     
-						 
-				
- 	    }
-	cur = cur->next;
+			printf("\n");
+		}
+
+		cur = cur->next;
 	}
     return;
 }
