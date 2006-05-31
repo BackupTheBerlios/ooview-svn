@@ -222,6 +222,7 @@ int main (int argc, char **argv)
 	bool action_performed; /* fuck java ;-) */
 	bool file_printed = false;
 	
+	
 	initscr();
 	raw();
 	noecho();
@@ -625,6 +626,7 @@ int main (int argc, char **argv)
 								init_screen();
 								wrefresh(main_win);
 								file_printed = false;
+								
 
 						}
 						else
@@ -700,28 +702,36 @@ int olog (int errcode) {
 	char *logstring;
 	time_t time_now;
 	
-	if (logfile = fopen (logfilepath, "ab") != NULL) 
-	{
+	
+	logfile = fopen (logfilepath, "ab");
+	
+	
+	
+	if (logfile != NULL) {
 		/*log file format: 
 			date - errcode - errdesc
 			example:
 			Wed May 31 10:36:50 2006 - Code: 13 - unknown error
 		*/
 		
+	
 		time_now = time(NULL);
+		char *my_time;
+		my_time = ctime(&time_now);
+	
+		my_time = strncpy(my_time, my_time, (strlen(my_time))-1);
 		
-		sprintf(logstring,"%s - %i - %s", ctime(&time_now), errcode, returnvalues[errcode]);
+		sprintf(logstring,"%s   %i - %s\n", my_time, errcode, returnvalues[errcode]);
 		
-		//fputs (returnvalues[errcode], logfile);
 		fputs (logstring, logfile);
+		
 		fclose(logfile);
 		return 0;
-	}
-	else
-	{
+	}	else	{
 		char *text;
 		sprintf(text,"could not write to logfile \"%s\"\n", logfilepath);
 		print_status_bar(text);
 	}
 	return 13;
+	
 }
