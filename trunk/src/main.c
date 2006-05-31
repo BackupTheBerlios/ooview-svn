@@ -673,7 +673,7 @@ int olog (int errcode) {
 	time_t time_now;
 	
 	
-	logfile = fopen (logfilepath, "ab");
+	logfile = fopen (logfilepath, "a");
 	
 	
 	if (logfile != NULL) {
@@ -700,4 +700,28 @@ int olog (int errcode) {
 	}
 	return 9;
 	
+}
+
+int load_config(){
+	FILE *configfile;
+	
+	if ((configfile = fopen(configpath, "r")) != NULL){
+	
+		DEF_LANG=(char *)malloc(50);
+		PRINTER=(char *)malloc(50);
+		GFX_VIEWER=(char *)malloc(50);
+		BROWSER=(char *)malloc(50);
+		
+		DEF_LANG=fgets(DEF_LANG, 50, configfile);
+		
+		PRINTER=fgets(PRINTER, 20, configfile);
+		GFX_VIEWER=fgets(GFX_VIEWER, 20, configfile);
+		BROWSER=fgets(BROWSER, 20, configfile);
+		
+		fclose(configfile);
+	} else {
+		olog(14);
+		return 14;
+	}
+	return 0;
 }

@@ -29,9 +29,14 @@ char *help_choices[] = {
 };
 
 int n_choices[4];
-char *logfilepath;
 
-char *BROWSER="/usr/bin/elinks";
+char *logfilepath;
+char *configpath="/etc/ooview/config";
+
+char *BROWSER;
+char *PRINTER;
+char *GFX_VIEWER;
+char *DEF_LANG;
 
 char *returnvalues [] = {
 	"success",
