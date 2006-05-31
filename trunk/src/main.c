@@ -114,10 +114,14 @@ FILE *open_odt (char *filename)
 {
 		FILE *tmp;
 		char unzip_cmd[255] = "unzip -u -d /tmp/ooview ";
+		
 		strcat(unzip_cmd,filename);
-		strcat(unzip_cmd," >> $HOME/.ooview_log");
+		strcat(unzip_cmd," 2&> /dev/null");
 		system(unzip_cmd);
-
+		
+	
+		
+		
 		tmp = fopen ("/tmp/ooview/content.xml","r");
 		return tmp;
 		
@@ -227,7 +231,7 @@ int main (int argc, char **argv)
 	logfilepath = strcat (logfilepath, "/.ooview.log");
 	
 	
-	olog(4);
+	//olog(4);
 	
 	initscr();
 	raw();
@@ -732,7 +736,8 @@ int olog (int errcode) {
 	}	else	{
 		/*print error message to status bar (cant be written to logfile, eh)*/
 		//char *text;
-		//sprintf(text,"could not write to logfile");
+		//sprintf(text,"could not write to logfile \"%s\"", logfilepath);
+		
 		print_status_bar("Could not write to logfile. Check permissions!");
 	}
 	return 13;
