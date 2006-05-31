@@ -310,7 +310,12 @@ int main (int argc, char **argv)
 						
 							if (backsteps > COLS)
 							{
-									steps = backsteps%COLS;
+									int test;
+									test = backsteps/COLS;
+									steps = (backsteps%COLS);
+									if (test>1)
+											steps += COLS;
+
 									mvwprintw(status_bar,0,0,"%d",steps);
 									touchwin(status_bar);
 									wrefresh(status_bar);
