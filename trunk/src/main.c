@@ -106,7 +106,8 @@ FILE *open_odt (char *filename)
 		char syscall[255] = "cat /tmp/ooview/content.xml | o3totxt > /tmp/ooview/content.tmp";
 		
 		strcat(unzip_cmd,filename);
-		strcat(unzip_cmd," 2&> /dev/null");
+		strcat(unzip_cmd," > /dev/null");
+		printf("%s",unzip_cmd);
 		system(unzip_cmd);
 		
 		system(syscall);
