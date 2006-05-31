@@ -36,10 +36,14 @@ void parseText (xmlDocPtr doc, xmlNodePtr cur) {
 					printf("%s", k1);
 					xmlFree(k1);										
 				}else {
-					 k2 = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-					// c2 = (char*)k2;
-					 printf("%s",k2);
-	                 xmlFree(k2);
+					if (!xmlStrcmp(temp_cur->name, (const xmlChar*)"tab")) {
+						printf("    ");
+					} else {
+						k2 = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+						// c2 = (char*)k2;
+						printf("%s",k2);
+	    	            xmlFree(k2);
+					}
 				}
 				temp_cur = temp_cur->next;
 			}
