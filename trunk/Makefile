@@ -10,7 +10,7 @@ bin/ooview: $(SOURCEFILES)
 	$(GCC) $(GCCNOLINK) src/metaparser.c
 	$(GCC) $(GCCNOLINK) src/main.c
 	$(GCC) $(GCCOPTS) -o $@ main.o metaparser.o
-
+	$(RM) *.o
 clean:
 	$(RM) *.o
 	$(RM) $(BINDIR)/*

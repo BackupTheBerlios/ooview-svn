@@ -65,7 +65,7 @@ void parseText (xmlDocPtr doc, xmlNodePtr cur) {
     return;
 }
 
-static void parseDoc(char *docname) {
+static void parseDoc(char *docname, struct fileinfo *buffer) {
 
 	xmlDocPtr doc;
 	xmlNodePtr cur;
