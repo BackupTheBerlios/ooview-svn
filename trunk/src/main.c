@@ -606,7 +606,6 @@ int main (int argc, char **argv)
 								init_screen();
 								wrefresh(main_win);
 								file_printed = false;
-								
 
 						}
 						else
