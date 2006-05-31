@@ -7,7 +7,6 @@
 #include <sys/types.h>
 #include <time.h> /*for logging*/
 
-#include "main.h"
 #include "metaparser.h"
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
@@ -76,6 +75,7 @@ MENU *help_menu;
 WINDOW *main_win;
 WINDOW *menu_bar;
 WINDOW *status_bar;
+WINDOW *meta_win;
 WINDOW *file_win;
 WINDOW *view_win;
 WINDOW *opts_win;
@@ -598,7 +598,7 @@ int main (int argc, char **argv)
 												main_win= subwin(stdscr,LINES-2,COLS,1,0);
 												odt_file = open_odt(file);
 												get_file_content(odt_file, file, buffer);
-
+												get_file_meta("/tmp/ooview/meta.xml",buffer);
 												close(odt_file);
 												cur_char = buffer->content;
 												print_site(buffer->cur_line, buffer->lines);
@@ -665,6 +665,19 @@ int main (int argc, char **argv)
 								print_status_bar("No open file!");
 						}
 				}
+
+				if (!strcmp(cmd,"Document info"))
+				{
+						if (file_printed)
+						{
+
+						}
+						else
+						{
+								print_status_bar("No open file!");
+						}
+				}
+				
 				if (!strcmp(cmd,"OOView homepage"))
 				{
 						

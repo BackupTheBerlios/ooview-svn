@@ -7,8 +7,7 @@ char *PRINTER;
 char *GFX_VIEWER;
 char *DEF_LANG;
 
-struct fileinfo
-{
+struct fileinfo {
 		char *content;
 		int cur_line;
 		int lines;
