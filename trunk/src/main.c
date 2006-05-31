@@ -12,6 +12,7 @@
 #define NEWLINE 10
 #define HOMEPAGE_URL "http://ooview.berlios.de"
 
+
 char *file_choices[] = {
 	"Open",
 	"Close",
@@ -60,6 +61,7 @@ WINDOW *opts_win;
 WINDOW *help_win;
 
 int n_choices[4];
+char *logfilepath="/var/log/ooview.log";
 
 struct fileinfo
 {
@@ -69,6 +71,9 @@ struct fileinfo
 };
 
 #define clear_status_bar() print_status_bar("");
+
+int write_odd(struct fileinfo *content);
+int olog(int errcode);
 
 void print_status_bar(char *text)
 {
@@ -316,6 +321,9 @@ int main (int argc, char **argv)
 									if (test>1)
 											steps += COLS;
 
+									mvwprintw(status_bar,0,0,"%d",steps);
+									touchwin(status_bar);
+									wrefresh(status_bar);
 									cur_char += backsteps;
 									cur_char -= steps;
 							}
@@ -652,4 +660,29 @@ int main (int argc, char **argv)
 	
 	end_curses();
 	return 0;
+}
+
+int write_odd (struct fileinfo *content) {
+	/*writes the content of struct fileinfo to a temporary *.odd (=open document document) file*/
+	const char *filename="/tmp/ooview/content.odd"; /*write content to this file, will be moved afterwards*/
+	
+	FILE *file;
+	if (file = fopen(filename,"wb") != NULL)
+	{
+		fwrite(&content, sizeof(content), 1, file);
+		fclose(file);
+	}
+	else
+		return 7;
+	return 0;
+}
+
+int olog (int errcode) {
+	FILE *logfile;
+	if (logfile = fopen (logfilepath, "ab") != NULL) 
+	{
+		fputs ();
+	
+	
+	
 }
