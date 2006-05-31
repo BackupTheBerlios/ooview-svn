@@ -103,7 +103,7 @@ FILE *open_odt (char *filename)
 {
 		FILE *tmp;
 		char unzip_cmd[255] = "unzip -u -d /tmp/ooview ";
-		char syscall[255] = "cat /tmp/ooview/content.xml | o3totxt > /tmp/ooview/content.tmp";
+		char syscall[255] = "cat /tmp/ooview/content.xml | /home/viktor/my_docs/3_chd/pre/ooview/ooview/trunk/src/o3read-0.0.4/o3totxt > /tmp/ooview/content.tmp";
 		
 		strcat(unzip_cmd,filename);
 		strcat(unzip_cmd," > /dev/null");
