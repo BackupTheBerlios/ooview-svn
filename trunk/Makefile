@@ -2,12 +2,14 @@ SOURCEFILES = src/$(wildcard *.c) src/$(wildcard *.h)
 BINDIR=bin
 
 GCC = /usr/bin/gcc
-GCCOPTS = -lmenu -lncurses
-GCCNOLINK = -ansi -Werror -c
+GCCOPTS = -lmenu -lncurses -lxml2
+GCCNOLINK = -ansi -Werror -I/usr/include/libxml2 -c
 RM = rm -f
 
 bin/ooview: $(SOURCEFILES)
-	$(GCC) $(GCCOPTS) -o $@ src/main.c 
+	$(GCC) $(GCCNOLINK) src/metaparser.c
+	$(GCC) $(GCCNOLINK) src/main.c
+	$(GCC) $(GCCOPTS) -o $@ main.o metaparser.o
 
 clean:
 	$(RM) *.o

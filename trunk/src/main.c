@@ -5,43 +5,16 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <time.h> //for logging
+#include <time.h> /*for logging*/
+
+#include "main.h"
+#include "metaparser.h"
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define EXIT_KEY 0x078  /* <x> */
 #define RETURN 0x00A
 #define NEWLINE 10
 #define HOMEPAGE_URL "http://ooview.berlios.de"
-
-
-char *file_choices[] = {
-	"Open",
-	"Close",
-	"Export/Save as...",
-	"Reload",
-	"Print",
-	"Exit"
-};
-
-char *view_choices[] = {
-	"Find",
-	"Find next",
-	"Find previous",
-	"Document info",
-};
-
-char *opts_choices[] = {
-	"External Programs",
-	"Language",
-	"Keybindings",
-};
-
-char *help_choices[] = {
-	"OOView homepage",
-	"Documentation",
-	"Copying",
-	"About OOView",
-};
 
 ITEM **file_items;
 ITEM **view_items;
@@ -61,39 +34,7 @@ WINDOW *view_win;
 WINDOW *opts_win;
 WINDOW *help_win;
 
-int n_choices[4];
-char *logfilepath;
-
-char *BROWSER="/usr/bin/elinks";
-
-char *returnvalues [] = {
-	"success",
-	"odt file not found",
-	"ovd file not found",
-	"could not open odt file",
-	"could not open ovd file",
-	"could not open txt file",
-	"odt file corruption",
-	"ovd file corruption",
-	"system call returns not 0",
-	"could not write log file. ironic",
-	"language file not found",
-	"no external program defined",
-	"unknown error. should not happen :("
-};
-
-
-struct fileinfo
-{
-		char *content;
-		int cur_line;
-		int lines;
-};
-
 #define clear_status_bar() print_status_bar("");
-
-int write_odd(struct fileinfo *content);
-int olog(int errcode);
 
 void print_status_bar(char *text)
 {
@@ -128,7 +69,7 @@ FILE *open_odt (char *filename)
 		
 }
 
-void get_file_info (FILE *ovd_file, char *filename, struct fileinfo *buffer)
+void get_file_content (FILE *ovd_file, char *filename, struct fileinfo *buffer)
 {
 		char *file_input;
 		struct stat attribut;
@@ -149,6 +90,11 @@ void get_file_info (FILE *ovd_file, char *filename, struct fileinfo *buffer)
 		}
 }
 
+void get_file_meta (FILE* odt_file, struct fileinfo *buffer)
+{
+		
+}
+
 int print_file (struct fileinfo *buffer, char *cur_char)
 {	
 		int output;
@@ -167,7 +113,7 @@ int print_file (struct fileinfo *buffer, char *cur_char)
 						waddch(main_win,output);
 						cur_char++;
 						i++;
-				} while ((output!=10) && (i<COLS));
+				} while ((output!=NEWLINE) && (i<COLS));
 				lines_to_write--;
 		} while ((lines_to_write!=0) && (output!=0));
 	
@@ -215,7 +161,7 @@ void end_curses(void)
 int main (int argc, char **argv)
 {
 	FILE *ovd_file;
-	FILE *content_file;
+	FILE *odt_file;
 	ITEM *cur_item;
 	struct fileinfo *buffer;
 
@@ -336,13 +282,13 @@ int main (int argc, char **argv)
 							int backsteps = 0;
 							int steps;
 
-							if ((*--cur_char)==10)
+							if ((*--cur_char)==NEWLINE)
 								backsteps++;
 
 							do {
 									cur_char--;
 									backsteps++;
-							} while (((*cur_char)!=10) && (cur_char != buffer->content));
+							} while (((*cur_char)!=NEWLINE) && (cur_char != buffer->content));
 						
 							if (backsteps > COLS)
 							{
@@ -374,7 +320,7 @@ int main (int argc, char **argv)
 							int cols=0;
 							
 							
-							while (((*cur_char)!=10) && (cols < COLS-1))
+							while (((*cur_char)!=NEWLINE) && (cols < COLS-1))
 							{		
 									cols++;
 									cur_char++;
@@ -587,7 +533,7 @@ int main (int argc, char **argv)
 												{
 														buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
 														main_win = subwin(stdscr,LINES-2,COLS,1,0);
-														get_file_info(ovd_file, file, buffer);
+														get_file_content(ovd_file, file, buffer);
 														close(ovd_file);
 														cur_char = buffer->content;
 														print_site(buffer->cur_line, buffer->lines);
@@ -603,9 +549,10 @@ int main (int argc, char **argv)
 										{
 												buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
 												main_win= subwin(stdscr,LINES-2,COLS,1,0);
-												content_file = open_odt(file);
-												get_file_info(content_file, file, buffer);
-												close(content_file);
+												odt_file = open_odt(file);
+												get_file_content(odt_file, file, buffer);
+												get_file_meta(odt_file, file, buffer);
+												close(odt_file);
 												cur_char = buffer->content;
 												print_site(buffer->cur_line, buffer->lines);
 												print_file(buffer,cur_char);
@@ -654,7 +601,7 @@ int main (int argc, char **argv)
 								if (ovd_file != NULL)
 								{
 										
-										get_file_info(ovd_file,file,buffer);
+										get_file_content(ovd_file,file,buffer);
 										file_printed = true;
 										fclose(ovd_file);
 										cur_char = buffer->content;

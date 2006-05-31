@@ -1,24 +1,16 @@
-/* 
- * odt-dokument enpacken; 
- * zb 
- * mkdir test; unzip -x test.odt -d test
- * $ ./xmlparser test/content.xml
- * kompilieren mit gcc -I/usr/include/libxml2 xmlparser3.c -o xmlparser3 -lxml2
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 
+#include "metaparser.h"
+
 void parseText (xmlDocPtr doc, xmlNodePtr cur) {
 
 	xmlChar *key;
-	int i=0;
 	
-	while ((cur != NULL) || (i<=7)) {
-		printf("%s: ",cur->name);
+	while (xmlStrcmp(cur->name,(const xmlChar *)"user-defined") ) {
 	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"generator"))) {
 
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -67,7 +59,7 @@ void parseText (xmlDocPtr doc, xmlNodePtr cur) {
 		    printf("%s\n", key);
 		    xmlFree(key);			
  	    }
-	i++;
+
 	cur = cur->next;
 	}
     return;
@@ -112,20 +104,4 @@ static void parseDoc(char *docname) {
 	
 	xmlFreeDoc(doc);
 	return;
-}
-
-int
-main(int argc, char **argv) {
-
-	char *docname;
-		
-	if (argc <= 1) {
-		printf("Usage: %s docname\n", argv[0]);
-		return(0);
-	}
-
-	docname = argv[1];
-	parseDoc (docname);
-
-	return (1);
 }
