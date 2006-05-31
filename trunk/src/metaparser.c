@@ -17,7 +17,7 @@ void parseText (xmlDocPtr doc, xmlNodePtr cur) {
 	xmlChar *key;
 	int i=0;
 	
-	while ((cur != NULL) || (i<7)) {
+	while ((cur != NULL) || (i<=7)) {
 		printf("%s: ",cur->name);
 	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"generator"))) {
 
@@ -67,7 +67,7 @@ void parseText (xmlDocPtr doc, xmlNodePtr cur) {
 		    printf("%s\n", key);
 		    xmlFree(key);			
  	    }
-
+	i++;
 	cur = cur->next;
 	}
     return;

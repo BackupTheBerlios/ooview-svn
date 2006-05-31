@@ -693,7 +693,7 @@ int write_odd (struct fileinfo *content) {
 	const char *filename="/tmp/ooview/content.odd"; /*write content to this file, will be moved afterwards*/
 	
 	FILE *file;
-	if (file = fopen(filename,"wb") != NULL)
+	if ((file = fopen(filename,"wb")) != NULL)
 	{
 		fwrite(&content, sizeof(content), 1, file);
 		fclose(file);
