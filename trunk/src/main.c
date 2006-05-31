@@ -316,9 +316,6 @@ int main (int argc, char **argv)
 									if (test>1)
 											steps += COLS;
 
-									mvwprintw(status_bar,0,0,"%d",steps);
-									touchwin(status_bar);
-									wrefresh(status_bar);
 									cur_char += backsteps;
 									cur_char -= steps;
 							}
