@@ -224,10 +224,7 @@ int main (int argc, char **argv)
 	
 	
 	logfilepath = getenv ("HOME");
-	logfilepath = strcat (logfilepath, "/ooview.log");
-	
-	printf("%s\n\n", logfilepath);
-	fflush(NULL);
+	logfilepath = strcat (logfilepath, "/.ooview.log");
 	
 	
 	olog(4);
