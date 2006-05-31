@@ -62,7 +62,7 @@ WINDOW *opts_win;
 WINDOW *help_win;
 
 int n_choices[4];
-char *logfilepath="/var/log/ooview.log";
+char *logfilepath;
 
 
 char *returnvalues [] = {
@@ -222,6 +222,15 @@ int main (int argc, char **argv)
 	bool action_performed; /* fuck java ;-) */
 	bool file_printed = false;
 	
+	
+	logfilepath = getenv ("HOME");
+	logfilepath = strcat (logfilepath, "/ooview.log");
+	
+	printf("%s\n\n", logfilepath);
+	fflush(NULL);
+	
+	
+	olog(4);
 	
 	initscr();
 	raw();
@@ -706,31 +715,28 @@ int olog (int errcode) {
 	logfile = fopen (logfilepath, "ab");
 	
 	
-	
 	if (logfile != NULL) {
 		/*log file format: 
-			date - errcode - errdesc
+			date  \n errcode - errdesc
 			example:
-			Wed May 31 10:36:50 2006 - Code: 13 - unknown error
+			Wed May 31 10:36:50 2006
+				Code: 13 - unknown error
 		*/
 		
-	
-		time_now = time(NULL);
 		char *my_time;
+		
+		time_now = time(NULL);
+		
 		my_time = ctime(&time_now);
-	
-		my_time = strncpy(my_time, my_time, (strlen(my_time))-1);
-		
-		sprintf(logstring,"%s   %i - %s\n", my_time, errcode, returnvalues[errcode]);
-		
-		fputs (logstring, logfile);
+		fprintf(logfile,"%s   %i - %s\n", my_time, errcode, returnvalues[errcode]);
 		
 		fclose(logfile);
 		return 0;
 	}	else	{
-		char *text;
-		sprintf(text,"could not write to logfile \"%s\"\n", logfilepath);
-		print_status_bar(text);
+		/*print error message to status bar (cant be written to logfile, eh)*/
+		//char *text;
+		//sprintf(text,"could not write to logfile");
+		//
 	}
 	return 13;
 	
