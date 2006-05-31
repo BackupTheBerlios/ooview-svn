@@ -736,7 +736,7 @@ int olog (int errcode) {
 		/*print error message to status bar (cant be written to logfile, eh)*/
 		//char *text;
 		//sprintf(text,"could not write to logfile");
-		//
+		print_status_bar("Could not write to logfile. Check permissions!");
 	}
 	return 13;
 	
