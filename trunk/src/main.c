@@ -64,6 +64,7 @@ WINDOW *help_win;
 int n_choices[4];
 char *logfilepath;
 
+char *BROWSER="/usr/bin/elinks";
 
 char *returnvalues [] = {
 	"success",
@@ -672,7 +673,19 @@ int main (int argc, char **argv)
 				}
 				if (!strcmp(cmd,"OOView homepage"))
 				{
-						print_status_bar(HOMEPAGE_URL);
+						
+						char *syscall;
+					
+						syscall=(char *)malloc(strlen(BROWSER)+strlen(HOMEPAGE_URL)+1);
+						sprintf(syscall, "%s %s", BROWSER, HOMEPAGE_URL);
+						
+						system(syscall);
+						free(syscall);
+						if (file_printed)
+							free(buffer);
+						end_curses();
+						return(0);
+						
 				}
 						
 				if (!strcmp(cmd,"Exit"))
