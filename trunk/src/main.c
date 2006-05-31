@@ -231,7 +231,7 @@ int main (int argc, char **argv)
 	logfilepath = strcat (logfilepath, "/.ooview.log");
 	
 	
-	//olog(4);
+	
 	
 	initscr();
 	raw();
@@ -308,7 +308,7 @@ int main (int argc, char **argv)
 	set_menu_mark(help_menu, "");
 
 	init_screen();
-	
+	olog(4);
 	refresh();
 
 	while ((c = getch()) != EXIT_KEY)
@@ -735,11 +735,9 @@ int olog (int errcode) {
 		return 0;
 	}	else	{
 		/*print error message to status bar (cant be written to logfile, eh)*/
-		//char *text;
-		//sprintf(text,"could not write to logfile \"%s\"", logfilepath);
 		
 		print_status_bar("Could not write to logfile. Check permissions!");
 	}
-	return 13;
+	return 9;
 	
 }
