@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <time.h> //for logging
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define EXIT_KEY 0x078  /* <x> */
@@ -62,6 +63,24 @@ WINDOW *help_win;
 
 int n_choices[4];
 char *logfilepath="/var/log/ooview.log";
+
+
+char *returnvalues [] = {
+	"success",
+	"odt file not found",
+	"ovd file not found",
+	"could not open odt file",
+	"could not open ovd file",
+	"could not open txt file",
+	"odt file corruption",
+	"ovd file corruption",
+	"system call returns not 0",
+	"could not write log file. ironic",
+	"language file not found",
+	"no external program defined",
+	"unknown error. should not happen :("
+};
+
 
 struct fileinfo
 {
@@ -678,10 +697,31 @@ int write_odd (struct fileinfo *content) {
 
 int olog (int errcode) {
 	FILE *logfile;
+	char *logstring;
+	time_t time_now;
+	
 	if (logfile = fopen (logfilepath, "ab") != NULL) 
 	{
-		fputs ();
-	
-	
-	
+		/*log file format: 
+			date - errcode - errdesc
+			example:
+			Wed May 31 10:36:50 2006 - Code: 13 - unknown error
+		*/
+		
+		time_now = time(NULL);
+		
+		sprintf(logstring,"%s - %i - %s", ctime(&time_now), errcode, returnvalues[errcode]);
+		
+		//fputs (returnvalues[errcode], logfile);
+		fputs (logstring, logfile);
+		fclose(logfile);
+		return 0;
+	}
+	else
+	{
+		char *text;
+		sprintf(text,"could not write to logfile \"%s\"\n", logfilepath);
+		print_status_bar(text);
+	}
+	return 13;
 }
