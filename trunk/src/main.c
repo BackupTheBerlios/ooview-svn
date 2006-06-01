@@ -99,12 +99,13 @@ void print_site (int cur_line, int lines)
 		wrefresh(status_bar);
 }
 
-FILE *open_odt (char *filename)
+void open_odt (char *filename, struct fileinfo *buffer)
 {
 		FILE *tmp;
 		char unzip_cmd[255] = "unzip -u -d /tmp/ooview ";
-		char syscall[255] = "cat /tmp/ooview/content.xml | /home/viktor/my_docs/3_chd/pre/ooview/ooview/trunk/src/o3read-0.0.4/o3totxt > /tmp/ooview/content.tmp";
+		char syscall[255] = "cat /tmp/ooview/content.xml | o3totxt > /tmp/ooview/content.tmp";
 		
+		system("rm -rf /tmp/ooview");
 		strcat(unzip_cmd,filename);
 		strcat(unzip_cmd," > /dev/null");
 		printf("%s",unzip_cmd);
@@ -113,11 +114,12 @@ FILE *open_odt (char *filename)
 		system(syscall);
 		
 		tmp = fopen ("/tmp/ooview/content.tmp","r");
-		return tmp;
+		get_file_content(tmp, filename, buffer);
+		fclose(tmp);
 		
 }
 
-void get_file_content (FILE *ovd_file, char *filename, struct fileinfo *buffer)
+void get_file_content (FILE *file, char *filename, struct fileinfo *buffer)
 {
 		char *file_input;
 		struct stat attribut;
@@ -130,8 +132,7 @@ void get_file_content (FILE *ovd_file, char *filename, struct fileinfo *buffer)
 	
 		werase(main_win);
 		
-		print_status_bar("File successfully opened");
-		while ( (fgets(file_input,COLS+1,ovd_file)) != NULL)
+		while ( (fgets(file_input,COLS+1,file)) != NULL)
 		{
 				buffer->lines++;
 				strcat(buffer->content,file_input);
@@ -209,6 +210,7 @@ int main (int argc, char **argv)
 	struct fileinfo *buffer;
 
 	char *cur_char;
+	int file_type;
 	int c;
 	int i;
 	int cur_menu = 0;
@@ -324,30 +326,40 @@ int main (int argc, char **argv)
 					{
 							int backsteps = 0;
 							int steps;
-
+							char *tmp;
+							
 							if ((*--cur_char)==NEWLINE)
 								backsteps++;
 
-							do {
-									cur_char--;
-									backsteps++;
-							} while (((*cur_char)!=NEWLINE) && (cur_char != buffer->content));
-						
-							if (backsteps > COLS)
-							{
-									int test;
-									test = backsteps/COLS;
-									steps = (backsteps%COLS);
-									if (test>1)
-											steps += COLS;
+							tmp = cur_char - 1;
 
-									mvwprintw(status_bar,0,0,"%d",steps);
-									touchwin(status_bar);
-									wrefresh(status_bar);
-									cur_char += backsteps;
-									cur_char -= steps;
+							if ((*--cur_char) == NEWLINE)
+							{
+									cur_char = tmp;
+									print_status_bar("yeah");
 							}
-	
+							else
+							{
+									do {
+											cur_char--;
+											backsteps++;
+									} while (((*cur_char)!=NEWLINE) && (cur_char != buffer->content));
+								
+									if (backsteps > COLS)
+									{
+											int test;
+											test = backsteps/COLS;
+											steps = (backsteps%COLS);
+											if (test>1)
+													steps += COLS;
+		
+											mvwprintw(status_bar,0,0,"%d",steps);
+											touchwin(status_bar);
+											wrefresh(status_bar);
+											cur_char += backsteps;
+											cur_char -= steps;
+									}
+							}
 							buffer->cur_line--;
 							print_site(buffer->cur_line, buffer->lines);
 							
@@ -585,11 +597,12 @@ int main (int argc, char **argv)
 														buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
 														main_win = subwin(stdscr,LINES-2,COLS,1,0);
 														get_file_content(ovd_file, file, buffer);
-														close(ovd_file);
+														fclose(ovd_file);
 														cur_char = buffer->content;
 														print_site(buffer->cur_line, buffer->lines);
 														print_file(buffer,cur_char);
 														file_printed = true;
+														file_type = 2;
 												}
 												else
 												{
@@ -600,14 +613,13 @@ int main (int argc, char **argv)
 										{
 												buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
 												main_win= subwin(stdscr,LINES-2,COLS,1,0);
-												odt_file = open_odt(file);
-												get_file_content(odt_file, file, buffer);
+												open_odt(file, buffer);
 												get_file_meta("/tmp/ooview/meta.xml",buffer);
-												close(odt_file);
 												cur_char = buffer->content;
 												print_site(buffer->cur_line, buffer->lines);
 												print_file(buffer,cur_char);
 												file_printed = true;
+												file_type = 1;
 										}
 										
 								}
@@ -626,15 +638,14 @@ int main (int argc, char **argv)
 				{
 						if (file_printed)
 						{
-								if (strstr(file,".ovd")!=NULL)
-								{			
-										free(buffer);
-								}
+								free(buffer);
+								
 
 								werase(main_win);
 								init_screen();
 								wrefresh(main_win);
 								file_printed = false;
+								system("rm -rf /tmp/ooview");
 								
 
 						}
@@ -647,21 +658,40 @@ int main (int argc, char **argv)
 				{
 						if (file_printed)
 						{
-								ovd_file = fopen(file,"r");
+								if (strstr(file,".ovd")!=NULL)			/* ovd*/
+										{
+												ovd_file = fopen(file,"r");
+	
+												if (ovd_file != NULL)
+												{
+														free(buffer);
+														buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
+														main_win = subwin(stdscr,LINES-2,COLS,1,0);
+														get_file_content(ovd_file, file, buffer);
+														fclose(ovd_file);
+														cur_char = buffer->content;
+														print_site(buffer->cur_line, buffer->lines);
+														print_file(buffer,cur_char);
+														file_printed = true;
+												}
+												else
+												{
+														print_status_bar("File does not exist!");
+												}
+										}
+										else								/* else if odt */
+										{
+												free(buffer);
+												buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
+												main_win= subwin(stdscr,LINES-2,COLS,1,0);
+												open_odt(file,buffer);
+												get_file_meta("/tmp/ooview/meta.xml",buffer);
+												cur_char = buffer->content;
+												print_site(buffer->cur_line, buffer->lines);
+												print_file(buffer,cur_char);
+												file_printed = true;
+										}
 								
-								if (ovd_file != NULL)
-								{
-										
-										get_file_content(ovd_file,file,buffer);
-										file_printed = true;
-										fclose(ovd_file);
-										cur_char = buffer->content;
-										print_file(buffer,cur_char);
-								}
-								else
-								{
-										print_status_bar("File does not exist!");
-								}
 
 						}
 						else
@@ -674,6 +704,8 @@ int main (int argc, char **argv)
 				{
 						if (file_printed)
 						{
+								if (file_type==1)
+								{
 								
 								meta_win = newwin(9,COLS-2,(LINES/2)-5,1);
 								wbkgd(meta_win,COLOR_PAIR(4));
@@ -690,6 +722,8 @@ int main (int argc, char **argv)
 								box(meta_win,0,0);
 								wrefresh(meta_win);
 								touchwin(meta_win);
+								
+								}
 						}
 						else
 						{
