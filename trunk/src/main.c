@@ -699,11 +699,6 @@ int main (int argc, char **argv)
 				
 				if (!strcmp(cmd,"OOView homepage"))
 				{
-						
-					
-						printf("%s %s \n", BROWSER, HOMEPAGE_URL);
-						fflush(NULL);
-					
 						char *syscall;
 						syscall=(char *)malloc(strlen(BROWSER)+strlen(HOMEPAGE_URL)+1);
 						
@@ -718,6 +713,28 @@ int main (int argc, char **argv)
 						
 				}
 						
+				if (!strcmp(cmd,"Documentation"))
+				{
+						char *syscall;
+						syscall=(char *)malloc(strlen(BROWSER)+strlen(HOMEPAGE_URL)+1);
+						
+						
+						sprintf(syscall, "%s %s", BROWSER, HOMEPAGE_URL);
+						system(syscall);
+						free(syscall);
+						if (file_printed)
+							free(buffer);
+						end_curses();
+						return(0);
+						
+				}
+				
+				if (!strcmp(cmd, "About OOView"))
+					print_status_bar("OOView. Visit Homepage for details");
+				
+				if (!strcmp(cmd, "Copying"))
+					print_status_bar("OOView is under GPL/2 Visit Homepage for details");
+				
 				if (!strcmp(cmd,"Exit"))
 				{
 						if (file_printed)
