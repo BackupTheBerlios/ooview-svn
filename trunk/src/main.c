@@ -220,7 +220,7 @@ int main (int argc, char **argv)
 	logfilepath = getenv ("HOME");
 	logfilepath = strcat (logfilepath, "/.ooview.log");
 	
-	
+	load_config();
 	
 	
 	initscr();
@@ -298,7 +298,7 @@ int main (int argc, char **argv)
 	set_menu_mark(help_menu, "");
 
 	init_screen();
-	olog(4);
+	/*olog(4);*/
 	refresh();
 
 	while ((c = getch()) != EXIT_KEY)
@@ -700,11 +700,15 @@ int main (int argc, char **argv)
 				if (!strcmp(cmd,"OOView homepage"))
 				{
 						
-						char *syscall;
 					
+						printf("%s %s \n", BROWSER, HOMEPAGE_URL);
+						fflush(NULL);
+					
+						char *syscall;
 						syscall=(char *)malloc(strlen(BROWSER)+strlen(HOMEPAGE_URL)+1);
-						sprintf(syscall, "%s %s", BROWSER, HOMEPAGE_URL);
 						
+						
+						sprintf(syscall, "%s %s", BROWSER, HOMEPAGE_URL);
 						system(syscall);
 						free(syscall);
 						if (file_printed)
@@ -785,21 +789,56 @@ int load_config(){
 	FILE *configfile;
 	
 	if ((configfile = fopen(configpath, "r")) != NULL){
-	
+		int i=0;
+		char buf;
+		
+		
 		DEF_LANG=(char *)malloc(50);
 		PRINTER=(char *)malloc(50);
 		GFX_VIEWER=(char *)malloc(50);
 		BROWSER=(char *)malloc(50);
 		
-		DEF_LANG=fgets(DEF_LANG, 50, configfile);
+		while ( buf != 10){
+			buf=fgetc(configfile);
+			if (buf != 10)
+				DEF_LANG[i]=buf;
+			
+			i++;
+		}
+		i=0;
+		buf=0;
+		while ( buf != 10){
+			buf=fgetc(configfile);
+			if (buf != 10)
+				PRINTER[i]=buf;
+			
+			i++;
+		}
+		i=0;
+		buf=0;
+				
+		while ( buf != 10){
+			buf=fgetc(configfile);
+			if (buf != 10)
+				GFX_VIEWER[i]=buf;
+			
+			i++;
+		}
+		i=0;
+		buf=0;
+		while ( buf != 10){
+			buf=fgetc(configfile);
+			if (buf != 10)
+				BROWSER[i]=buf;
+			
+			i++;
+		}
 		
-		PRINTER=fgets(PRINTER, 20, configfile);
-		GFX_VIEWER=fgets(GFX_VIEWER, 20, configfile);
-		BROWSER=fgets(BROWSER, 20, configfile);
 		
 		fclose(configfile);
 	} else {
 		olog(14);
+		print_status_bar("Could not open configfile");
 		return 14;
 	}
 	return 0;
