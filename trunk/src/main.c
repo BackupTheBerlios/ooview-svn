@@ -769,6 +769,53 @@ int main (int argc, char **argv)
 				if (!strcmp(cmd, "Copying"))
 					print_status_bar("OOView is under GPL/2 Visit Homepage for details");
 				
+				if (!strcmp(cmd, "Find")) {
+					
+					if (file_printed){
+						
+						print_status_bar("Enter string to find: ");
+						char *findit;
+						
+						curs_set(1);
+						echo();
+						
+						wscanw(status_bar,"%s",findit);
+						
+						/*
+						
+						how to find a string in a string?
+						find it -> set cursor to position
+						
+						*/
+						
+						print_status_bar("Not implemented yet :(");
+						curs_set(0);
+						noecho();
+					} else {
+						print_status_bar("No open file!");
+					}
+				}
+				
+				if (!strcmp(cmd, "External Programs")) {
+					char *prompt;
+					
+					/*getting printer command*/
+					prompt = (char *)malloc((strlen("Enter Printing Command []: ")+strlen(PRINTER)));
+					sprintf(prompt,"Enter Printing Command [%s]: ",PRINTER);
+					print_status_bar(prompt);
+					free(prompt);
+					
+					curs_set(1);
+					echo();
+					char *newcmd;
+					wscanw(status_bar,"%s",newcmd);
+					curs_set(0);
+					noecho();
+					print_status_bar(newcmd);
+					/* / getting printer command*/	
+					
+				}
+				
 				if (!strcmp(cmd,"Exit"))
 				{
 						if (file_printed)
