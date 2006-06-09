@@ -81,6 +81,21 @@ WINDOW *view_win;
 WINDOW *opts_win;
 WINDOW *help_win;
 
+FILE *ovd_file;
+FILE *odt_file;
+ITEM *cur_item;
+struct fileinfo *buffer;
+char *cur_char;
+int file_type;
+int c;
+int i;
+int cur_menu = 0;
+char *cmd;
+bool action_performed; /* fuck java ;-) */
+bool file_printed = false;
+	
+
+
 #define clear_status_bar() print_status_bar("");
 
 void print_status_bar(char *text)
@@ -102,12 +117,12 @@ void print_site (int cur_line, int lines)
 void open_odt (char *filename, struct fileinfo *buffer)
 {
 		FILE *tmp;
-		char unzip_cmd[255] = "unzip -u -d /tmp/ooview ";
+		char unzip_cmd[255] = "unzip -qq -u -d /tmp/ooview ";
 		char syscall[255] = "cat /tmp/ooview/content.xml | o3totxt > /tmp/ooview/content.tmp";
 		
 		system("rm -rf /tmp/ooview");
 		strcat(unzip_cmd,filename);
-		strcat(unzip_cmd," > /dev/null");
+		/*strcat(unzip_cmd," -qq");*/
 		printf("%s",unzip_cmd);
 		system(unzip_cmd);
 		
@@ -202,23 +217,53 @@ void end_curses(void)
 		endwin();
 }
 
+int open_file(char *file){
+if ((strstr(file,".ovd")!=NULL) || (strstr(file,".odt")!=NULL) )  /* check whether it's a ovd or odt*/
+								{
+										if (strstr(file,".ovd")!=NULL)			/* ovd*/
+										{
+												ovd_file = fopen(file,"r");
+	
+												if (ovd_file != NULL)
+												{
+														buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
+														main_win = subwin(stdscr,LINES-2,COLS,1,0);
+														get_file_content(ovd_file, file, buffer);
+														fclose(ovd_file);
+														cur_char = buffer->content;
+														print_site(buffer->cur_line, buffer->lines);
+														print_file(buffer,cur_char);
+														file_printed = true;
+														file_type = 2;
+												}
+												else
+												{
+														print_status_bar("File does not exist!");
+												}
+										}
+										else								/* else if odt */
+										{
+												buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
+												main_win= subwin(stdscr,LINES-2,COLS,1,0);
+												open_odt(file, buffer);
+/*												get_file_meta("/tmp/ooview/meta.xml",buffer);*/
+												cur_char = buffer->content;
+												print_site(buffer->cur_line, buffer->lines);
+												print_file(buffer,cur_char);
+												file_printed = true;
+												file_type = 1;
+										}
+										
+								}
+								else
+								{
+										print_status_bar("Must be a OOView-file (ovd) or OpenDocument-file (odt)!");	
+								}
+}
+
 int main (int argc, char **argv)
 {
-	FILE *ovd_file;
-	FILE *odt_file;
-	ITEM *cur_item;
-	struct fileinfo *buffer;
 
-	char *cur_char;
-	int file_type;
-	int c;
-	int i;
-	int cur_menu = 0;
-	char *cmd;
-	bool action_performed; /* fuck java ;-) */
-	bool file_printed = false;
-	
-	
 	logfilepath = getenv ("HOME");
 	logfilepath = strcat (logfilepath, "/.ooview.log");
 	
@@ -300,9 +345,9 @@ int main (int argc, char **argv)
 	set_menu_mark(help_menu, "");
 
 	init_screen();
-	/*olog(4);*/
-	refresh();
-
+  if (argc == 2) 
+		open_file(argv[1]);
+										
 	while ((c = getch()) != EXIT_KEY)
 	{
 		action_performed = false;
@@ -585,48 +630,9 @@ int main (int argc, char **argv)
 								wscanw(status_bar,"%s",file);			/* get filename from user */
 								curs_set(0);
 								noecho();
-			
-								if ((strstr(file,".ovd")!=NULL) || (strstr(file,".odt")!=NULL) )  /* check whether it's a ovd or odt*/
-								{
-										if (strstr(file,".ovd")!=NULL)			/* ovd*/
-										{
-												ovd_file = fopen(file,"r");
-	
-												if (ovd_file != NULL)
-												{
-														buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
-														main_win = subwin(stdscr,LINES-2,COLS,1,0);
-														get_file_content(ovd_file, file, buffer);
-														fclose(ovd_file);
-														cur_char = buffer->content;
-														print_site(buffer->cur_line, buffer->lines);
-														print_file(buffer,cur_char);
-														file_printed = true;
-														file_type = 2;
-												}
-												else
-												{
-														print_status_bar("File does not exist!");
-												}
-										}
-										else								/* else if odt */
-										{
-												buffer = (struct fileinfo *)malloc(sizeof(struct fileinfo));
-												main_win= subwin(stdscr,LINES-2,COLS,1,0);
-												open_odt(file, buffer);
-												get_file_meta("/tmp/ooview/meta.xml",buffer);
-												cur_char = buffer->content;
-												print_site(buffer->cur_line, buffer->lines);
-												print_file(buffer,cur_char);
-												file_printed = true;
-												file_type = 1;
-										}
-										
-								}
-								else
-								{
-										print_status_bar("Must be a OOView-file (ovd) or OpenDocument-file (odt)!");	
-								}
+								open_file(file);
+
+								
 						}
 						else
 						{

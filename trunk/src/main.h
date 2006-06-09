@@ -34,3 +34,4 @@ void get_file_content (FILE *ovd_file, char *filename, struct fileinfo *buffer);
 int print_file (struct fileinfo *buffer, char *cur_char);
 void init_screen(void);
 void end_curses(void);
+int open_file(char *filename);
